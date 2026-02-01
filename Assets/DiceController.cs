@@ -1,26 +1,62 @@
 using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
 public class DiceController : MonoBehaviour
 {
-    public SpriteRenderer[] diceFaces; // Ë³Ğò£ºUp(0), Down(1), Left(2), Right(3), Front(4), Back(5)
+    public SpriteRenderer[] diceFaces; // Ë³ï¿½ï¿½Up(0), Down(1), Left(2), Right(3), Front(4), Back(5)
     public float flipDuration = 0.3f;
     private int[] diceState = { 0, 1, 2, 3, 4, 5 };
     private bool isFlipping = false;
 
-    // ¹Ø¼üĞŞ¸Ä£ºËõĞ¡³õÊ¼Î»ÖÃÆ«ÒÆ£¬ÈÃĞÂ¾ÉÃæÎŞ·ìÌùºÏ
+    //æ–°å¢UIç›¸å…³å˜é‡
+    [Header("UIæ˜¾ç¤º")]
+    public Image[] diceUI;//æ³¨æ„é¡ºåº up,left,right,back,front
+    public Sprite[] diceSprites;
+
+    
+    
+
+    // ï¿½Ø¼ï¿½ï¿½Ş¸Ä£ï¿½ï¿½ï¿½Ğ¡ï¿½ï¿½Ê¼Î»ï¿½ï¿½Æ«ï¿½Æ£ï¿½ï¿½ï¿½ï¿½Â¾ï¿½ï¿½ï¿½ï¿½Ş·ï¿½ï¿½ï¿½ï¿½ï¿½
     private Vector2[][] dirVisualConfig = new Vector2[][]
     {
-        new Vector2[] { Vector2.up, Vector2.up, new Vector2(0, -0.5f) },     // ÏÂÍÆ ¡ú ĞÂÃæ³õÊ¼Y=-0.5£¨ÌùºÏ¾ÉÃæµ×²¿£©
-        new Vector2[] { Vector2.up, Vector2.down, new Vector2(0, 0.5f) },    // ÉÏÍÆ ¡ú ĞÂÃæ³õÊ¼Y=0.5£¨ÌùºÏ¾ÉÃæ¶¥²¿£©
-        new Vector2[] { Vector2.right, Vector2.right, new Vector2(-0.5f, 0) },// ×óÍÆ ¡ú ĞÂÃæ³õÊ¼X=-0.5£¨ÌùºÏ¾ÉÃæ×ó²à£©
-        new Vector2[] { Vector2.right, Vector2.left, new Vector2(0.5f, 0) }  // ÓÒÍÆ ¡ú ĞÂÃæ³õÊ¼X=0.5£¨ÌùºÏ¾ÉÃæÓÒ²à£©
+        new Vector2[] { Vector2.up, Vector2.up, new Vector2(0, -0.5f) },     // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ê¼Y=-0.5ï¿½ï¿½ï¿½ï¿½ï¿½Ï¾ï¿½ï¿½ï¿½×²ï¿½ï¿½ï¿½
+        new Vector2[] { Vector2.up, Vector2.down, new Vector2(0, 0.5f) },    // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ê¼Y=0.5ï¿½ï¿½ï¿½ï¿½ï¿½Ï¾ï¿½ï¿½æ¶¥ï¿½ï¿½ï¿½ï¿½
+        new Vector2[] { Vector2.right, Vector2.right, new Vector2(-0.5f, 0) },// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ê¼X=-0.5ï¿½ï¿½ï¿½ï¿½ï¿½Ï¾ï¿½ï¿½ï¿½ï¿½ï¿½à£©
+        new Vector2[] { Vector2.right, Vector2.left, new Vector2(0.5f, 0) }  // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ê¼X=0.5ï¿½ï¿½ï¿½ï¿½ï¿½Ï¾ï¿½ï¿½ï¿½ï¿½Ò²à£©
     };
 
     private void Start()
     {
         UpdateFaceDisplay();
+        UpdateDiceUI();
     }
+
+    //æ–°å¢éª°å­UIæ˜¾ç¤ºå‡½æ•°
+    private void UpdateDiceUI()
+    {
+        if (diceUI == null || diceUI.Length < 5) return;
+        if (diceSprites == null || diceSprites.Length < 6) return;
+
+        diceUI[0].sprite = GetSpriteForFace(diceState[0]);  // ä¸­å¿ƒï¼šä¸Šé¢
+        diceUI[1].sprite = GetSpriteForFace(diceState[2]);  // å·¦ä¾§ï¼šå·¦é¢
+        diceUI[2].sprite = GetSpriteForFace(diceState[3]);  // å³ä¾§ï¼šå³é¢
+        diceUI[3].sprite = GetSpriteForFace(diceState[5]);  // ä¸Šæ–¹ï¼šåé¢
+        diceUI[4].sprite = GetSpriteForFace(diceState[4]);  // ä¸‹æ–¹ï¼šå‰é¢
+
+    }
+
+    //è·å–å›¾ç‰‡
+    private Sprite GetSpriteForFace(int faceIndex)
+    {
+        
+        if (faceIndex >= 0 && faceIndex < diceSprites.Length)
+        {
+            return diceSprites[faceIndex];
+        }
+        return null;
+    }
+
 
     public void PushDice(Vector2 pushDir)
     {
@@ -33,33 +69,39 @@ public class DiceController : MonoBehaviour
         int oldTopFace = diceState[0];
         int newTopFace = RollDiceState(dirType);
 
+        //ç«‹å³æ›´æ–°UI
+        UpdateDiceUI();
+
+
         StartCoroutine(FlipAndMove(targetPos, oldTopFace, newTopFace, dirType));
     }
+
+   
 
     private int RollDiceState(int dirType)
     {
         int[] newState = (int[])diceState.Clone();
         switch (dirType)
         {
-            case 0: // ÏÂÍÆ ¡ú ÉÏ·­
+            case 0: // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ï·ï¿½
                 newState[0] = diceState[4];
                 newState[1] = diceState[5];
                 newState[4] = diceState[1];
                 newState[5] = diceState[0];
                 break;
-            case 1: // ÉÏÍÆ ¡ú ÏÂ·­
+            case 1: // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Â·ï¿½
                 newState[0] = diceState[5];
                 newState[1] = diceState[4];
                 newState[4] = diceState[0];
                 newState[5] = diceState[1];
                 break;
-            case 2: // ×óÍÆ ¡ú ÓÒ·­
+            case 2: // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ò·ï¿½
                 newState[0] = diceState[2];
                 newState[1] = diceState[3];
                 newState[2] = diceState[1];
                 newState[3] = diceState[0];
                 break;
-            case 3: // ÓÒÍÆ ¡ú ×ó·­
+            case 3: // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½
                 newState[0] = diceState[3];
                 newState[1] = diceState[2];
                 newState[2] = diceState[0];
@@ -70,7 +112,7 @@ public class DiceController : MonoBehaviour
         return diceState[0];
     }
 
-    // ºËĞÄĞŞ¸Ä£ºÎ»ÖÃÓëËõ·ÅÁª¶¯£¬ÊµÏÖÎŞ·ìÌùºÏ
+    // ï¿½ï¿½ï¿½ï¿½ï¿½Ş¸Ä£ï¿½Î»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Êµï¿½ï¿½ï¿½Ş·ï¿½ï¿½ï¿½ï¿½ï¿½
     IEnumerator FlipAndMove(Vector2 targetPos, int oldTopFace, int newTopFace, int dirType)
     {
         isFlipping = true;
@@ -81,7 +123,7 @@ public class DiceController : MonoBehaviour
         Vector2 oldCompressDir = visualConfig[1];
         Vector2 newStartPos = visualConfig[2];
 
-        // ³õÊ¼»¯ĞÂÃæ£º½ôÌù¾ÉÃæ±ßÔµ
+        // ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½æ£ºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ôµ
         newFace.enabled = true;
         newFace.transform.localPosition = newStartPos;
         newFace.transform.localScale = Vector3.zero;
@@ -92,12 +134,12 @@ public class DiceController : MonoBehaviour
         {
             elapsed += Time.deltaTime;
             float t = elapsed / flipDuration;
-            // ¹Ø¼üÏµÊı£ºÈÃÎ»ÖÃÒÆ¶¯·ù¶ÈºÍËõ·Å·ù¶ÈÍêÈ«Æ¥Åä
+            // ï¿½Ø¼ï¿½Ïµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½Æ¶ï¿½ï¿½ï¿½ï¿½Èºï¿½ï¿½ï¿½ï¿½Å·ï¿½ï¿½ï¿½ï¿½ï¿½È«Æ¥ï¿½ï¿½
             float posT = Mathf.Lerp(0, 0.5f, t);
             float scaleT = Mathf.Lerp(1, 0, t);
             float newScaleT = Mathf.Lerp(0, 1, t);
 
-            // ¾ÉÃæ£ºÑ¹ËõµÄÍ¬Ê±£¬ÒÆ¶¯·ù¶È¸ÕºÃÈÃ±ßÔµºÍĞÂÃæÌùºÏ
+            // ï¿½ï¿½ï¿½æ£ºÑ¹ï¿½ï¿½ï¿½ï¿½Í¬Ê±ï¿½ï¿½ï¿½Æ¶ï¿½ï¿½ï¿½ï¿½È¸Õºï¿½ï¿½Ã±ï¿½Ôµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
             Vector3 oldScale = Vector3.one;
             if (compressAxis == Vector2.up)
                 oldScale.y = scaleT;
@@ -107,7 +149,7 @@ public class DiceController : MonoBehaviour
             oldFace.transform.localPosition = oldCompressDir * posT;
             oldFace.color = new Color(1, 1, 1, scaleT);
 
-            // ĞÂÃæ£ºÕ¹¿ªµÄÍ¬Ê±£¬Í¬²½ÒÆ¶¯µ½ÖĞĞÄ£¬Ê¼ÖÕ½ôÌù¾ÉÃæ
+            // ï¿½ï¿½ï¿½æ£ºÕ¹ï¿½ï¿½ï¿½ï¿½Í¬Ê±ï¿½ï¿½Í¬ï¿½ï¿½ï¿½Æ¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä£ï¿½Ê¼ï¿½Õ½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
             newFace.transform.localPosition = Vector2.Lerp(newStartPos, Vector2.zero, t);
             Vector3 newScale = Vector3.one;
             if (compressAxis == Vector2.up)
@@ -144,6 +186,8 @@ public class DiceController : MonoBehaviour
                 diceFaces[i].color = new Color(1, 1, 1, 0);
             }
         }
+        // æ›´æ–°UI
+        UpdateDiceUI();
     }
 
     private int GetPushDirectionType(Vector2 dir)
