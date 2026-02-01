@@ -11,19 +11,22 @@ public class PlayerController : MonoBehaviour
     private void Awake()
     {
         inputControl = new PlayerInputControl();
+        inputControl.Player.Move.performed += OnMovePerformed;
     }
 
     private void OnEnable() => inputControl.Enable();
     private void OnDisable() => inputControl.Disable();
 
-    private void Update()
+    private void OnMovePerformed(InputAction.CallbackContext context)
     {
         if (!isMoving)
         {
+            // 读取本次按下的输入方向
             Vector2 inputDir = inputControl.Player.Move.ReadValue<Vector2>();
             if (inputDir.magnitude > 0.1f)
             {
                 inputDir = inputDir.normalized;
+                isMoving = true;
                 StartCoroutine(MovePlayer(inputDir));
             }
         }
@@ -31,7 +34,6 @@ public class PlayerController : MonoBehaviour
 
     IEnumerator MovePlayer(Vector2 inputDir)
     {
-        isMoving = true;
         Vector2 startPos = transform.position;
         Vector2 targetPos = startPos + inputDir;
         targetPos = new Vector2(Mathf.Round(targetPos.x), Mathf.Round(targetPos.y));
@@ -57,6 +59,6 @@ public class PlayerController : MonoBehaviour
             yield return null;
         }
         transform.position = targetPos;
-        isMoving = false;
+        isMoving = false; // 移动结束，解锁下一次按键响应
     }
 }
