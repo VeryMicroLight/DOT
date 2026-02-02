@@ -7,6 +7,7 @@ public class PlayerController : MonoBehaviour
     public float moveDuration = 0.2f;
     private PlayerInputControl inputControl;
     private bool isMoving = false;
+    public AudioSource MusicSource;
 
     private void Awake()
     {
@@ -17,15 +18,20 @@ public class PlayerController : MonoBehaviour
     private void OnEnable() => inputControl.Enable();
     private void OnDisable() => inputControl.Disable();
 
+    private void Start()
+    {
+        // 保留原有坐标修正
+        DiceController.CorrectToGridCenter(transform);
+    }
+
     private void OnMovePerformed(InputAction.CallbackContext context)
     {
         if (!isMoving)
         {
-            // 读取本次按下的输入方向
             Vector2 inputDir = inputControl.Player.Move.ReadValue<Vector2>();
             if (inputDir.magnitude > 0.1f)
             {
-                inputDir = inputDir.normalized;
+                inputDir = GetSingleGridDirection(inputDir);
                 isMoving = true;
                 StartCoroutine(MovePlayer(inputDir));
             }
@@ -35,30 +41,88 @@ public class PlayerController : MonoBehaviour
     IEnumerator MovePlayer(Vector2 inputDir)
     {
         Vector2 startPos = transform.position;
-        Vector2 targetPos = startPos + inputDir;
-        targetPos = new Vector2(Mathf.Round(targetPos.x), Mathf.Round(targetPos.y));
+        Vector2 playerTargetPos = startPos + inputDir; // 人物目标位置
+        // 检测:人物自身目标位置是否有障碍物（Obstacle）
+        if (IsPositionHasObstacle(playerTargetPos))
+        {
+            isMoving = false; // 重置状态，避免人物卡住
+            yield break; // 终止协程，禁止移动
+        }
 
-        // 检测目标位置是否有骰子
-        Collider2D[] hits = Physics2D.OverlapBoxAll(targetPos, Vector2.one * 0.5f, 0);
+        // 保留原有骰子检测
+        Collider2D[] hits = Physics2D.OverlapBoxAll(playerTargetPos, Vector2.one * 0.5f, 0);
+        DiceController targetDice = null;
         foreach (var hit in hits)
         {
-            DiceController dice = hit.GetComponent<DiceController>();
-            if (dice != null)
+            targetDice = hit.GetComponent<DiceController>();
+            if (targetDice != null) break;
+        }
+
+
+        // 若有骰子，检测骰子目标位置是否有障碍物
+
+        if (targetDice != null)
+        {
+            Vector2 diceTargetPos = (Vector2)targetDice.transform.position + inputDir; // 骰子目标位置
+            if (IsPositionHasObstacle(diceTargetPos))
             {
-                dice.PushDice(inputDir);
+                isMoving = false; // 重置状态
+                yield break; // 终止协程，既不推骰子也不移动
             }
         }
 
-        // 移动玩家
+        // 两层检测都通过.执行原有推骰子+人物移动逻辑
+        if (targetDice != null)
+        {
+            targetDice.PushDice(inputDir); // 推骰子
+            MusicSource.Play();
+        }
+
+        // 原有人物移动插值动画
         float elapsed = 0;
         while (elapsed < moveDuration)
         {
             elapsed += Time.deltaTime;
             float t = elapsed / moveDuration;
-            transform.position = Vector2.Lerp(startPos, targetPos, t);
+            transform.position = Vector2.Lerp(startPos, playerTargetPos, t);
             yield return null;
         }
-        transform.position = targetPos;
-        isMoving = false; // 移动结束，解锁下一次按键响应
+
+        // 原有坐标修正，消除浮点数误差
+        transform.position = playerTargetPos;
+        DiceController.CorrectToGridCenter(transform);
+
+        isMoving = false;
+    }
+
+    // 保留原有单格方向处理
+    private Vector2 GetSingleGridDirection(Vector2 rawInput)
+    {
+        float absX = Mathf.Abs(rawInput.x);
+        float absY = Mathf.Abs(rawInput.y);
+        if (absX > absY)
+        {
+            return new Vector2(Mathf.Sign(rawInput.x), 0);
+        }
+        else
+        {
+            return new Vector2(0, Mathf.Sign(rawInput.y));
+        }
+    }
+
+    // 通用障碍物检测方法（可复用给后续所有物体）
+    // 检测指定位置是否有标签为Obstacle的物体
+    private bool IsPositionHasObstacle(Vector2 checkPos)
+    {
+        // 用和骰子检测相同的尺寸，适配瓦片中心碰撞
+        Collider2D[] obstacleHits = Physics2D.OverlapBoxAll(checkPos, Vector2.one * 0.5f, 0);
+        foreach (var hit in obstacleHits)
+        {
+            if (hit.CompareTag("Obstacle"))
+            {
+                return true;
+            }
+        }
+        return false; // 无障碍物
     }
 }
