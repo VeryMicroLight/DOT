@@ -769,6 +769,7 @@ MonoBehaviour:
   - {fileID: 556441147}
   - {fileID: 2130679208}
   flipDuration: 0.3
+  isFlipping: 0
   diceUI:
   - {fileID: 382854241}
   - {fileID: 1214807183}
@@ -2997,7 +2998,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1691213613}
   - component: {fileID: 1691213612}
-  - component: {fileID: 1691213615}
   - component: {fileID: 1691213614}
   - component: {fileID: 1691213616}
   - component: {fileID: 1691213617}
@@ -3087,35 +3087,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: efd7da6518a17d9408f1fc9f0bf74e68, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveDuration: 0.2
+  moveDuration: 0.3
   MusicSource: {fileID: 1691213617}
---- !u!50 &1691213615
-Rigidbody2D:
-  serializedVersion: 4
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1691213611}
-  m_BodyType: 0
-  m_Simulated: 1
-  m_UseFullKinematicContacts: 0
-  m_UseAutoMass: 0
-  m_Mass: 1
-  m_LinearDrag: 0.5
-  m_AngularDrag: 0.05
-  m_GravityScale: 0
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_Interpolate: 0
-  m_SleepingMode: 1
-  m_CollisionDetection: 0
-  m_Constraints: 4
+  Dice: {fileID: 432493045}
 --- !u!61 &1691213616
 BoxCollider2D:
   m_ObjectHideFlags: 0

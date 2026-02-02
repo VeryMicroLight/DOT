@@ -7,7 +7,7 @@ public class DiceController : MonoBehaviour
     public SpriteRenderer[] diceFaces; // Up(0), Down(1), Left(2), Right(3), Front(4), Back(5)
     public float flipDuration = 0.3f;
     private int[] diceState = { 0, 1, 2, 3, 4, 5 };
-    private bool isFlipping = false;
+    public bool isFlipping = false;
 
 
     [Header("UI显示")]

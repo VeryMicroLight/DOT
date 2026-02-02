@@ -8,6 +8,7 @@ public class PlayerController : MonoBehaviour
     private PlayerInputControl inputControl;
     private bool isMoving = false;
     public AudioSource MusicSource;
+    public DiceController Dice;
 
     private void Awake()
     {
