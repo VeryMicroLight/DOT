@@ -6,12 +6,16 @@ public class PlayerController : MonoBehaviour
 {
     public float moveDuration = 0.2f;
     private PlayerInputControl inputControl;
+    private RunLevel runLevel;
     private bool isMoving = false;
     public AudioSource MusicSource;
     public DiceController Dice;
 
+    public GameObject LevelManager;
+
     private void Awake()
     {
+        runLevel = LevelManager.GetComponent<RunLevel>();
         inputControl = new PlayerInputControl();
         inputControl.Player.Move.performed += OnMovePerformed;
     }
@@ -27,13 +31,13 @@ public class PlayerController : MonoBehaviour
 
     private void OnMovePerformed(InputAction.CallbackContext context)
     {
-        if (!isMoving)
+        if (!runLevel.isMoving)
         {
             Vector2 inputDir = inputControl.Player.Move.ReadValue<Vector2>();
             if (inputDir.magnitude > 0.1f)
             {
                 inputDir = GetSingleGridDirection(inputDir);
-                isMoving = true;
+                runLevel.isMoving = true;
                 StartCoroutine(MovePlayer(inputDir));
             }
         }
@@ -46,7 +50,7 @@ public class PlayerController : MonoBehaviour
         // 检测:人物自身目标位置是否有障碍物（Obstacle）
         if (IsPositionHasObstacle(playerTargetPos))
         {
-            isMoving = false; // 重置状态，避免人物卡住
+            runLevel.isMoving = false; // 重置状态，避免人物卡住
             yield break; // 终止协程，禁止移动
         }
 
@@ -56,7 +60,11 @@ public class PlayerController : MonoBehaviour
         foreach (var hit in hits)
         {
             targetDice = hit.GetComponent<DiceController>();
-            if (targetDice != null) break;
+            if (targetDice != null)
+            {
+                hit.transform.SetParent(transform, true);
+                break;
+            }
         }
 
 
@@ -67,7 +75,7 @@ public class PlayerController : MonoBehaviour
             Vector2 diceTargetPos = (Vector2)targetDice.transform.position + inputDir; // 骰子目标位置
             if (IsPositionHasObstacle(diceTargetPos))
             {
-                isMoving = false; // 重置状态
+                runLevel.isMoving = false; // 重置状态
                 yield break; // 终止协程，既不推骰子也不移动
             }
         }
@@ -93,7 +101,7 @@ public class PlayerController : MonoBehaviour
         transform.position = playerTargetPos;
         DiceController.CorrectToGridCenter(transform);
 
-        isMoving = false;
+        runLevel.isMoving = false;
     }
 
     // 保留原有单格方向处理

@@ -66,7 +66,7 @@ public class DiceController : MonoBehaviour
         //立即更新UI
         UpdateDiceUI();
 
-        StartCoroutine(FlipAndMove(targetPos, oldTopFace, newTopFace, dirType));
+        StartCoroutine(FlipAnim(targetPos, oldTopFace, newTopFace, dirType));
     }
 
     private int RollDiceState(int dirType)
@@ -103,7 +103,7 @@ public class DiceController : MonoBehaviour
         return diceState[0];
     }
 
-    IEnumerator FlipAndMove(Vector2 targetPos, int oldTopFace, int newTopFace, int dirType)
+    IEnumerator FlipAnim(Vector2 targetPos, int oldTopFace, int newTopFace, int dirType)
     {
         isFlipping = true;
         SpriteRenderer oldFace = diceFaces[oldTopFace];
@@ -135,7 +135,7 @@ public class DiceController : MonoBehaviour
                 oldScale.x = scaleT;
             oldFace.transform.localScale = oldScale;
             oldFace.transform.localPosition = oldCompressDir * posT;
-            oldFace.color = new Color(1, 1, 1, scaleT);
+            //oldFace.color = new Color(1, 1, 1, scaleT);
 
             newFace.transform.localPosition = Vector2.Lerp(newStartPos, Vector2.zero, t);
             Vector3 newScale = Vector3.one;
@@ -144,13 +144,13 @@ public class DiceController : MonoBehaviour
             else
                 newScale.x = newScaleT;
             newFace.transform.localScale = newScale;
-            newFace.color = new Color(1, 1, 1, newScaleT);
+            newFace.color = new Color(1, 1, 1, 255);
 
             yield return null;
         }
 
         // 先赋值目标位置，再强制修正到n.5格式，消除浮点数插值误差
-        transform.position = targetPos;
+        //transform.position = targetPos;
         CorrectToGridCenter(transform);
 
         UpdateFaceDisplay();

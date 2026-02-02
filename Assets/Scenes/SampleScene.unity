@@ -668,7 +668,6 @@ GameObject:
   - component: {fileID: 432493047}
   - component: {fileID: 432493046}
   - component: {fileID: 432493045}
-  - component: {fileID: 432493044}
   - component: {fileID: 432493043}
   m_Layer: 0
   m_Name: Dice
@@ -722,33 +721,6 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.98841953, y: 1.0032307}
   m_EdgeRadius: 0
---- !u!50 &432493044
-Rigidbody2D:
-  serializedVersion: 4
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 432493042}
-  m_BodyType: 0
-  m_Simulated: 1
-  m_UseFullKinematicContacts: 0
-  m_UseAutoMass: 0
-  m_Mass: 1
-  m_LinearDrag: 0.5
-  m_AngularDrag: 0.05
-  m_GravityScale: 0
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_Interpolate: 0
-  m_SleepingMode: 1
-  m_CollisionDetection: 0
-  m_Constraints: 4
 --- !u!114 &432493045
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -768,7 +740,7 @@ MonoBehaviour:
   - {fileID: 625750541}
   - {fileID: 556441147}
   - {fileID: 2130679208}
-  flipDuration: 0.3
+  flipDuration: 0.15
   isFlipping: 0
   diceUI:
   - {fileID: 382854241}
@@ -1719,6 +1691,51 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1136633116}
   m_CullTransparentMesh: 1
+--- !u!1 &1180375659
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1180375661}
+  - component: {fileID: 1180375660}
+  m_Layer: 0
+  m_Name: LevelManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1180375660
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1180375659}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a043ff233b9ce544ba8a480d884b20d8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isMoving: 0
+--- !u!4 &1180375661
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1180375659}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.32194614, y: 2.968752, z: 0.03560672}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1214023169
 GameObject:
   m_ObjectHideFlags: 0
@@ -3087,9 +3104,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: efd7da6518a17d9408f1fc9f0bf74e68, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveDuration: 0.3
+  moveDuration: 0.15
   MusicSource: {fileID: 1691213617}
   Dice: {fileID: 432493045}
+  LevelManager: {fileID: 1180375659}
 --- !u!61 &1691213616
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -4542,3 +4560,4 @@ SceneRoots:
   - {fileID: 1288424639}
   - {fileID: 460756584}
   - {fileID: 1214023171}
+  - {fileID: 1180375661}
