@@ -7,15 +7,15 @@ public class PlayerController : MonoBehaviour
     public float moveDuration = 0.2f;
     private PlayerInputControl inputControl;
     private RunLevel runLevel;
-    private bool isMoving = false;
     public AudioSource MusicSource;
     public DiceController Dice;
-
+    public Vector2 inputDir;
     public GameObject LevelManager;
 
     private void Awake()
     {
         runLevel = LevelManager.GetComponent<RunLevel>();
+        //inputControl = LevelManager.GetComponent<PlayerInputControl>();
         inputControl = new PlayerInputControl();
         inputControl.Player.Move.performed += OnMovePerformed;
     }
@@ -62,7 +62,6 @@ public class PlayerController : MonoBehaviour
             targetDice = hit.GetComponent<DiceController>();
             if (targetDice != null)
             {
-                hit.transform.SetParent(transform, true);
                 break;
             }
         }
@@ -83,7 +82,6 @@ public class PlayerController : MonoBehaviour
         // 两层检测都通过.执行原有推骰子+人物移动逻辑
         if (targetDice != null)
         {
-            targetDice.PushDice(inputDir); // 推骰子
             MusicSource.Play();
         }
 
@@ -124,14 +122,34 @@ public class PlayerController : MonoBehaviour
     private bool IsPositionHasObstacle(Vector2 checkPos)
     {
         // 用和骰子检测相同的尺寸，适配瓦片中心碰撞
-        Collider2D[] obstacleHits = Physics2D.OverlapBoxAll(checkPos, Vector2.one * 0.5f, 0);
-        foreach (var hit in obstacleHits)
+        Vector2 inputDir = inputControl.Player.Move.ReadValue<Vector2>();
+        Collider2D obstacleHit = Physics2D.OverlapBox(checkPos, Vector2.one * 0.5f, 0);
+        if (obstacleHit)
         {
-            if (hit.CompareTag("Obstacle"))
+            if (obstacleHit.CompareTag("Obstacle"))
             {
                 return true;
             }
+            else if (obstacleHit.CompareTag("Dice"))
+            {
+                obstacleHit.transform.SetParent(transform, true);
+                if (!IsPositionHasObstacle(checkPos + inputDir))
+                {
+                    obstacleHit.GetComponent<DiceController>().PushDice(inputDir);
+                }
+                return IsPositionHasObstacle(checkPos + inputDir);
+
+            }
+            
+            else
+            {
+                return false; // 无障碍物
+            }
         }
-        return false; // 无障碍物
+        else
+        {
+            return false; // 无障碍物
+        }
+            
     }
 }

@@ -6,6 +6,8 @@ TagManager:
   tags:
   - Dice
   - Obstacle
+  - Button
+  - Door
   layers:
   - Default
   - TransparentFX
