@@ -1,19 +1,19 @@
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.ResourceManagement.ResourceProviders;
 using UnityEngine.SceneManagement;
+using System.Collections.Generic;
 
 public class PersistentSceneManager : MonoBehaviour
 {
     public static PersistentSceneManager Instance; // 单例，全局调用
 
     [Header("开始场景配置")]
-    public AssetReference startSceneRef; // 拖拽StartScene的Addressable引用
+    public AssetReference startSceneRef; 
 
     [Header("所有关卡数据")]
-    public List<LevelData> allLevelDatas; // 拖拽所有LevelData实例（含序号）
+    public List<LevelData> allLevelDatas; 
     private AsyncOperationHandle<SceneInstance> currentLoadedScene; // 记录当前加载的场景
     private LevelData currentLevelData; // 记录当前关卡数据
     public LevelData CurrentLevelData => currentLevelData;
@@ -28,14 +28,14 @@ public class PersistentSceneManager : MonoBehaviour
 
     private void Start()
     {
-        // 游戏启动：自动加载开始场景（常驻场景已启动）
+        // 游戏启动时自动加载开始场景
         LoadStartScene();
     }
 
     #region 加载开始场景
     public void LoadStartScene()
     {
-        // 先卸载当前可能存在的场景（如关卡），再加载开始场景
+        // 先卸载当前可能存在的场景，再加载开始场景
         if (currentLoadedScene.IsValid())
         {
             UnloadCurrentScene(() => LoadStartSceneInternal());
@@ -84,10 +84,7 @@ public class PersistentSceneManager : MonoBehaviour
             LoadLevelInternal(targetLevel);
         }
     }
-
-    #endregion
-
-    #region 加载下一关（关卡胜利后调用）
+    //加载下一关（关卡胜利后调用）
     public void LoadNextLevel()
     {
         if (currentLevelData == null) return;
@@ -108,6 +105,12 @@ public class PersistentSceneManager : MonoBehaviour
                 currentLoadedScene = handle;
                 SceneManager.SetActiveScene(handle.Result.Scene); // 设置关卡为活动场景
                 Debug.Log("关卡" + levelData.levelIndex + "加载成功：" + levelData.levelName);
+
+                // 关键修改：关卡加载成功后，通知LevelSelectUI添加已加载记录（解锁该关卡）
+                if (LevelSelectUI.Instance != null)
+                {
+                    LevelSelectUI.Instance.AddLoadedLevelRecord(levelData.levelIndex);
+                }
             }
             else
             {
@@ -145,9 +148,13 @@ public class PersistentSceneManager : MonoBehaviour
             Addressables.Release(currentLoadedScene);
         }
     }
+
     // 新增：直接通过LevelData加载关卡（适配LevelSelectUI的调用）
     public void LoadLevel(LevelData levelData)
     {
+        if (levelData == null) return;
+
+        // 卸载当前场景，再加载目标关卡
         if (currentLoadedScene.IsValid())
         {
             UnloadCurrentScene(() => LoadLevelInternal(levelData));
