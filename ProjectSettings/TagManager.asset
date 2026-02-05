@@ -8,6 +8,7 @@ TagManager:
   - Obstacle
   - Button
   - Door
+  - Card
   layers:
   - Default
   - TransparentFX

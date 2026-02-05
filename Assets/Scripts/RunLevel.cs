@@ -13,13 +13,17 @@ public class RunLevel : MonoBehaviour
     //private PlayerController playerController;
     public Vector2 inputDir;
     public bool isMoving = false;
+    public bool isWin = false;
 
     public GameObject Button;
+    public GameObject Card;
     private ButtonBehaviour buttonBehaviour;
+    private CardBehavior cardBehaviour;
     // Start is called before the first frame update
     private void Awake()
     {
         buttonBehaviour = Button.GetComponent<ButtonBehaviour>();
+        cardBehaviour = Card.GetComponent<CardBehavior>();
         //playerController = Player.GetComponent<PlayerController>();
         inputControl = new PlayerInputControl();
         Listing("Dice", Dice);
@@ -33,9 +37,11 @@ public class RunLevel : MonoBehaviour
     private void Update()
     {
         inputDir = inputControl.Player.Move.ReadValue<Vector2>();
+        cardBehaviour.CardFloating();
         //buttonBehaviour.CheckIfAnyDiceOnButton();
         if (isMoving)
         {
+            cardBehaviour.CheckIfIsWin();
             buttonBehaviour.CheckIfAnythingOnButton(inputDir, "enter");
         }
         else
