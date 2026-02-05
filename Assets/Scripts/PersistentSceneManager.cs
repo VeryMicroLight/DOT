@@ -140,6 +140,26 @@ public class PersistentSceneManager : MonoBehaviour
     }
     #endregion
 
+    public void ReturnToMainMenu()      //返回主菜单
+    {
+        //先卸载当前关卡场景
+        if (currentLoadedScene.IsValid())
+        {
+            UnloadCurrentScene(() =>
+            {
+                // 卸载完成后，重新加载主菜单场景
+                LoadStartSceneInternal();
+                Debug.Log("已卸载当前关卡，回到主菜单");
+            });
+        }
+        else
+        {
+            // 如果没有加载中的关卡，直接加载主菜单
+            LoadStartSceneInternal();
+        }
+    }
+
+
     // 防止内存泄漏，退出时释放
     private void OnDestroy()
     {
@@ -149,7 +169,7 @@ public class PersistentSceneManager : MonoBehaviour
         }
     }
 
-    // 新增：直接通过LevelData加载关卡（适配LevelSelectUI的调用）
+    //直接通过LevelData加载关卡（适配LevelSelectUI的调用）
     public void LoadLevel(LevelData levelData)
     {
         if (levelData == null) return;

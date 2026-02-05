@@ -27,8 +27,8 @@ public class LevelSelectUI : MonoBehaviour
 
     private void Start()
     {
-        PlayerPrefs.DeleteKey("LoadedLevelIndexes"); // 临时清空关卡记录，运行一次后删掉
-        PlayerPrefs.Save();
+        //PlayerPrefs.DeleteKey("LoadedLevelIndexes"); // 临时清空关卡记录，运行一次后删掉
+        //PlayerPrefs.Save();
         // 从持久化数据加载已解锁关卡
         LoadLoadedLevelRecords();
         // 绑定按钮点击事件 + 刷新按钮状态
@@ -90,7 +90,7 @@ public class LevelSelectUI : MonoBehaviour
     }
 
     //加载持久化的已加载关卡记录（PlayerPrefs，重启游戏不丢失）
-    private void LoadLoadedLevelRecords()
+    public void LoadLoadedLevelRecords()
     {
         loadedLevelIndexes.Clear();
         // 读取保存的已加载关卡字符串
