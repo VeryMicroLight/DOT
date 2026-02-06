@@ -7,15 +7,21 @@ using Sequence = DG.Tweening.Sequence;
 
 public class CardBehavior : MonoBehaviour
 {
-    public float singleSideDuration = .3f;
-    public float A ;
+    // 卡牌浮动参数
+    public float singleSideDuration = .3f;     //半周期
+    public float A ;                           //振幅
+    private float originY;                     //平衡点
+
+    //DOTween
     private Tweener tweener;
-    private float originY;
+    
 
     public GameObject LevelManager;
     private RunLevel runLevel;
 
     public Animator ShowCardAnimator;
+    public Animator BGCanvasAnimator;
+    public AudioSource CollectedSound;
     
     // Start is called before the first frame update
     void Start()
@@ -75,16 +81,24 @@ public class CardBehavior : MonoBehaviour
 
     private IEnumerator WinAnim()
     {
+        
         Sequence sequence = DOTween.Sequence();
         sequence.Append(transform.DOMoveY(originY - .5f, .2f));
         sequence.Append(transform.DOMoveY(originY + 10f, .4f));
+        CollectedSound.Play();
         yield return new WaitForSeconds(.6f);
         yield return null;
     }
 
+
+    
     private IEnumerator ShowCardAnim()
     {
+        /*
+        在CardCanvas的_card脚本里有关于如何给文本上色，以及编辑卡牌相关文本的方法
+        */
         ShowCardAnimator.SetTrigger("Show");
+        BGCanvasAnimator.SetTrigger("Do");
         yield return null;
     }
 }

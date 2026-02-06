@@ -126,7 +126,7 @@ public class PlayerController : MonoBehaviour
         Collider2D obstacleHit = Physics2D.OverlapBox(checkPos, Vector2.one * 0.5f, 0);
         if (obstacleHit)
         {
-            if (obstacleHit.CompareTag("Obstacle"))
+            if (obstacleHit.CompareTag("Obstacle") || obstacleHit.CompareTag("Door"))
             {
                 return true;
             }
