@@ -42,6 +42,40 @@ public class DiceController : MonoBehaviour
         diceUI[4].sprite = GetSpriteForFace(diceState[4]);  // 下方：前面
     }
 
+    //骰子朝上的点数
+    public int TopSideNumber()
+    {
+        if (diceState[0] == 0)
+        {
+            return 1;
+        }
+        else if (diceState[0] == 1)
+        {
+            return 6;
+        }
+        else if (diceState[0] == 2)
+        {
+            return 3;
+        }
+        else if (diceState[0] == 3)
+        {
+            return 4;
+        }
+        else if (diceState[0] == 4)
+        {
+            return 5;
+        }
+        else if (diceState[0] == 5)
+        {
+            return 2;
+        }
+        else
+        {
+            return 0;
+        }
+    }
+
+    
     //获取图片
     private Sprite GetSpriteForFace(int faceIndex)
     {

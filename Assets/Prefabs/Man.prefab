@@ -77,7 +77,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 111213753
   m_SortingLayer: 1
-  m_SortingOrder: 0
+  m_SortingOrder: 2
   m_Sprite: {fileID: -411359627, guid: d68c18481c6a761469d200a1fec007f4, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -104,6 +104,7 @@ MonoBehaviour:
   moveDuration: 0.15
   MusicSource: {fileID: 2176101925529166989}
   Dice: {fileID: 0}
+  inputDir: {x: 0, y: 0}
   LevelManager: {fileID: 0}
 --- !u!114 &8437405753501279396
 MonoBehaviour:

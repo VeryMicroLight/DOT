@@ -1,18 +1,31 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
+using Sequence = DG.Tweening.Sequence;
 
 public class DoorBehaviour : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    public bool isOpen = false;
+    public Sprite Unlock;
+    private Tweener tweener;
+    private SpriteRenderer spriteRenderer;
+
+    private void Awake()
     {
-        
+        spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
-    // Update is called once per frame
-    void Update()
+
+
+    public IEnumerator Open()
     {
-        
+        spriteRenderer.sprite = Unlock;
+        isOpen = true;
+        spriteRenderer.sortingOrder = 0;
+        Sequence sequence = DOTween.Sequence();
+        sequence.Append(transform.DOScale(1.2f, .05f));
+        sequence.Append(transform.DOScale(1f, .2f));
+        yield return null;
     }
 }

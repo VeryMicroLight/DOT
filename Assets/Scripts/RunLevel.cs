@@ -28,7 +28,6 @@ public class RunLevel : MonoBehaviour
         inputControl = new PlayerInputControl();
         Listing("Dice", Dice);
         Listing("Button", Buttons);
-        //inputControl.Player.Move.performed += ;
         
     }
 

@@ -118,7 +118,7 @@ public class PlayerController : MonoBehaviour
     }
 
     // 通用障碍物检测方法（可复用给后续所有物体）
-    // 检测指定位置是否有标签为Obstacle的物体
+    // 检测指定位置是否有标签为Obstacle或者Door的物体
     private bool IsPositionHasObstacle(Vector2 checkPos)
     {
         // 用和骰子检测相同的尺寸，适配瓦片中心碰撞
@@ -128,6 +128,13 @@ public class PlayerController : MonoBehaviour
         {
             if (obstacleHit.CompareTag("Obstacle") || obstacleHit.CompareTag("Door"))
             {
+                if (obstacleHit.CompareTag("Door"))
+                {
+                    if (obstacleHit.GetComponent<DoorBehaviour>().isOpen)
+                    {
+                        return false;
+                    }
+                }
                 return true;
             }
             else if (obstacleHit.CompareTag("Dice"))

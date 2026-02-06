@@ -95,7 +95,7 @@ public class CardBehavior : MonoBehaviour
     private IEnumerator ShowCardAnim()
     {
         /*
-        在CardCanvas的_card脚本里有关于如何给文本上色，以及编辑卡牌相关文本的方法
+        在同场景的CardCanvas的_card脚本里有关于如何给文本上色，以及编辑卡牌相关文本的方法
         */
         ShowCardAnimator.SetTrigger("Show");
         BGCanvasAnimator.SetTrigger("Do");
