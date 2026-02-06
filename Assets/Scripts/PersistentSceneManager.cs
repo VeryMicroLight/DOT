@@ -7,20 +7,20 @@ using System.Collections.Generic;
 
 public class PersistentSceneManager : MonoBehaviour
 {
-    public static PersistentSceneManager Instance; // µ¥Àı£¬È«¾Öµ÷ÓÃ
+    public static PersistentSceneManager Instance; // å•ä¾‹ï¼Œå…¨å±€è°ƒç”¨
 
-    [Header("¿ªÊ¼³¡¾°ÅäÖÃ")]
+    [Header("å¼€å§‹åœºæ™¯é…ç½®")]
     public AssetReference startSceneRef; 
 
-    [Header("ËùÓĞ¹Ø¿¨Êı¾İ")]
+    [Header("æ‰€æœ‰å…³å¡æ•°æ®")]
     public List<LevelData> allLevelDatas; 
-    private AsyncOperationHandle<SceneInstance> currentLoadedScene; // ¼ÇÂ¼µ±Ç°¼ÓÔØµÄ³¡¾°
-    private LevelData currentLevelData; // ¼ÇÂ¼µ±Ç°¹Ø¿¨Êı¾İ
+    private AsyncOperationHandle<SceneInstance> currentLoadedScene; // è®°å½•å½“å‰åŠ è½½çš„åœºæ™¯
+    private LevelData currentLevelData; // è®°å½•å½“å‰å…³å¡æ•°æ®
     public LevelData CurrentLevelData => currentLevelData;
 
     private void Awake()
     {
-        // µ¥Àı³õÊ¼»¯£¬È·±£³£×¤³¡¾°Î¨Ò»
+        // å•ä¾‹åˆå§‹åŒ–ï¼Œç¡®ä¿å¸¸é©»åœºæ™¯å”¯ä¸€
         if (Instance == null) Instance = this;
         else Destroy(gameObject);
         DontDestroyOnLoad(gameObject);
@@ -28,14 +28,14 @@ public class PersistentSceneManager : MonoBehaviour
 
     private void Start()
     {
-        // ÓÎÏ·Æô¶¯Ê±×Ô¶¯¼ÓÔØ¿ªÊ¼³¡¾°
+        // æ¸¸æˆå¯åŠ¨æ—¶è‡ªåŠ¨åŠ è½½å¼€å§‹åœºæ™¯
         LoadStartScene();
     }
 
-    #region ¼ÓÔØ¿ªÊ¼³¡¾°
+    #region åŠ è½½å¼€å§‹åœºæ™¯
     public void LoadStartScene()
     {
-        // ÏÈĞ¶ÔØµ±Ç°¿ÉÄÜ´æÔÚµÄ³¡¾°£¬ÔÙ¼ÓÔØ¿ªÊ¼³¡¾°
+        // å…ˆå¸è½½å½“å‰å¯èƒ½å­˜åœ¨çš„åœºæ™¯ï¼Œå†åŠ è½½å¼€å§‹åœºæ™¯
         if (currentLoadedScene.IsValid())
         {
             UnloadCurrentScene(() => LoadStartSceneInternal());
@@ -53,28 +53,28 @@ public class PersistentSceneManager : MonoBehaviour
             if (handle.Status == AsyncOperationStatus.Succeeded)
             {
                 currentLoadedScene = handle;
-                Debug.Log("¿ªÊ¼³¡¾°¼ÓÔØ³É¹¦");
+                Debug.Log("å¼€å§‹åœºæ™¯åŠ è½½æˆåŠŸ");
             }
             else
             {
-                Debug.LogError("¿ªÊ¼³¡¾°¼ÓÔØÊ§°Ü£º" + handle.OperationException);
+                Debug.LogError("å¼€å§‹åœºæ™¯åŠ è½½å¤±è´¥ï¼š" + handle.OperationException);
             }
         };
     }
     #endregion
 
-    #region ¼ÓÔØÖ¸¶¨¹Ø¿¨£¨´Ó¿ªÊ¼½çÃæµã»÷µ÷ÓÃ£©
+    #region åŠ è½½æŒ‡å®šå…³å¡ï¼ˆä»å¼€å§‹ç•Œé¢ç‚¹å‡»è°ƒç”¨ï¼‰
     public void LoadLevelByIndex(int targetIndex)
     {
-        // ¸ù¾İĞòºÅÆ¥Åä¹Ø¿¨Êı¾İ
+        // æ ¹æ®åºå·åŒ¹é…å…³å¡æ•°æ®
         LevelData targetLevel = allLevelDatas.Find(data => data.levelIndex == targetIndex);
         if (targetLevel == null)
         {
-            Debug.LogError("Î´ÕÒµ½ĞòºÅÎª" + targetIndex + "µÄ¹Ø¿¨");
+            Debug.LogError("æœªæ‰¾åˆ°åºå·ä¸º" + targetIndex + "çš„å…³å¡");
             return;
         }
 
-        // Ğ¶ÔØµ±Ç°³¡¾°£¬ÔÙ¼ÓÔØÄ¿±ê¹Ø¿¨
+        // å¸è½½å½“å‰åœºæ™¯ï¼Œå†åŠ è½½ç›®æ ‡å…³å¡
         if (currentLoadedScene.IsValid())
         {
             UnloadCurrentScene(() => LoadLevelInternal(targetLevel));
@@ -84,29 +84,29 @@ public class PersistentSceneManager : MonoBehaviour
             LoadLevelInternal(targetLevel);
         }
     }
-    //¼ÓÔØÏÂÒ»¹Ø£¨¹Ø¿¨Ê¤Àûºóµ÷ÓÃ£©
+    //åŠ è½½ä¸‹ä¸€å…³ï¼ˆå…³å¡èƒœåˆ©åè°ƒç”¨ï¼‰
     public void LoadNextLevel()
     {
         if (currentLevelData == null) return;
-        // ÏÂÒ»¹ØĞòºÅ=µ±Ç°ĞòºÅ+1
+        // ä¸‹ä¸€å…³åºå·=å½“å‰åºå·+1
         LoadLevelByIndex(currentLevelData.levelIndex + 1);
     }
     #endregion
 
-    #region ÄÚ²¿·½·¨£º¼ÓÔØ¹Ø¿¨¡¢Ğ¶ÔØµ±Ç°³¡¾°
+    #region å†…éƒ¨æ–¹æ³•ï¼šåŠ è½½å…³å¡ã€å¸è½½å½“å‰åœºæ™¯
     private void LoadLevelInternal(LevelData levelData)
     {
         currentLevelData = levelData;
-        // ¼ÓÔØAddressable¹Ø¿¨£¨µş¼ÓÄ£Ê½£¬±£Áô³£×¤³¡¾°£©
+        // åŠ è½½Addressableå…³å¡ï¼ˆå åŠ æ¨¡å¼ï¼Œä¿ç•™å¸¸é©»åœºæ™¯ï¼‰
         levelData.sceneReference.LoadSceneAsync(LoadSceneMode.Additive, true).Completed += (handle) =>
         {
             if (handle.Status == AsyncOperationStatus.Succeeded)
             {
                 currentLoadedScene = handle;
-                SceneManager.SetActiveScene(handle.Result.Scene); // ÉèÖÃ¹Ø¿¨Îª»î¶¯³¡¾°
-                Debug.Log("¹Ø¿¨" + levelData.levelIndex + "¼ÓÔØ³É¹¦£º" + levelData.levelName);
+                SceneManager.SetActiveScene(handle.Result.Scene); // è®¾ç½®å…³å¡ä¸ºæ´»åŠ¨åœºæ™¯
+                Debug.Log("å…³å¡" + levelData.levelIndex + "åŠ è½½æˆåŠŸï¼š" + levelData.levelName);
 
-                // ¹Ø¼üĞŞ¸Ä£º¹Ø¿¨¼ÓÔØ³É¹¦ºó£¬Í¨ÖªLevelSelectUIÌí¼ÓÒÑ¼ÓÔØ¼ÇÂ¼£¨½âËø¸Ã¹Ø¿¨£©
+                // å…³é”®ä¿®æ”¹ï¼šå…³å¡åŠ è½½æˆåŠŸåï¼Œé€šçŸ¥LevelSelectUIæ·»åŠ å·²åŠ è½½è®°å½•ï¼ˆè§£é”è¯¥å…³å¡ï¼‰
                 if (LevelSelectUI.Instance != null)
                 {
                     LevelSelectUI.Instance.AddLoadedLevelRecord(levelData.levelIndex);
@@ -114,7 +114,7 @@ public class PersistentSceneManager : MonoBehaviour
             }
             else
             {
-                Debug.LogError("¹Ø¿¨¼ÓÔØÊ§°Ü£º" + handle.OperationException);
+                Debug.LogError("å…³å¡åŠ è½½å¤±è´¥ï¼š" + handle.OperationException);
                 currentLevelData = null;
             }
         };
@@ -122,45 +122,45 @@ public class PersistentSceneManager : MonoBehaviour
 
     private void UnloadCurrentScene(System.Action onUnloaded = null)
     {
-        // ÓÃAddressableĞ¶ÔØ£¬±£Ö¤×ÊÔ´ÊÍ·Å
+        // ç”¨Addressableå¸è½½ï¼Œä¿è¯èµ„æºé‡Šæ”¾
         Addressables.UnloadSceneAsync(currentLoadedScene).Completed += (handle) =>
         {
             if (handle.Status == AsyncOperationStatus.Succeeded)
             {
-                Debug.Log("µ±Ç°³¡¾°Ğ¶ÔØ³É¹¦");
+                Debug.Log("å½“å‰åœºæ™¯å¸è½½æˆåŠŸ");
                 currentLoadedScene = default;
                 currentLevelData = null;
-                onUnloaded?.Invoke(); // Ğ¶ÔØÍê³ÉºóÖ´ĞĞ»Øµ÷
+                onUnloaded?.Invoke(); // å¸è½½å®Œæˆåæ‰§è¡Œå›è°ƒ
             }
             else
             {
-                Debug.LogError("³¡¾°Ğ¶ÔØÊ§°Ü£º" + handle.OperationException);
+                Debug.LogError("åœºæ™¯å¸è½½å¤±è´¥ï¼š" + handle.OperationException);
             }
         };
     }
     #endregion
 
-    public void ReturnToMainMenu()      //·µ»ØÖ÷²Ëµ¥
+    public void ReturnToMainMenu()      //è¿”å›ä¸»èœå•
     {
-        //ÏÈĞ¶ÔØµ±Ç°¹Ø¿¨³¡¾°
+        //å…ˆå¸è½½å½“å‰å…³å¡åœºæ™¯
         if (currentLoadedScene.IsValid())
         {
             UnloadCurrentScene(() =>
             {
-                // Ğ¶ÔØÍê³Éºó£¬ÖØĞÂ¼ÓÔØÖ÷²Ëµ¥³¡¾°
+                // å¸è½½å®Œæˆåï¼Œé‡æ–°åŠ è½½ä¸»èœå•åœºæ™¯
                 LoadStartSceneInternal();
-                Debug.Log("ÒÑĞ¶ÔØµ±Ç°¹Ø¿¨£¬»Øµ½Ö÷²Ëµ¥");
+                Debug.Log("å·²å¸è½½å½“å‰å…³å¡ï¼Œå›åˆ°ä¸»èœå•");
             });
         }
         else
         {
-            // Èç¹ûÃ»ÓĞ¼ÓÔØÖĞµÄ¹Ø¿¨£¬Ö±½Ó¼ÓÔØÖ÷²Ëµ¥
+            // å¦‚æœæ²¡æœ‰åŠ è½½ä¸­çš„å…³å¡ï¼Œç›´æ¥åŠ è½½ä¸»èœå•
             LoadStartSceneInternal();
         }
     }
 
 
-    // ·ÀÖ¹ÄÚ´æĞ¹Â©£¬ÍË³öÊ±ÊÍ·Å
+    // é˜²æ­¢å†…å­˜æ³„æ¼ï¼Œé€€å‡ºæ—¶é‡Šæ”¾
     private void OnDestroy()
     {
         if (currentLoadedScene.IsValid())
@@ -169,12 +169,12 @@ public class PersistentSceneManager : MonoBehaviour
         }
     }
 
-    //Ö±½ÓÍ¨¹ıLevelData¼ÓÔØ¹Ø¿¨£¨ÊÊÅäLevelSelectUIµÄµ÷ÓÃ£©
+    //ç›´æ¥é€šè¿‡LevelDataåŠ è½½å…³å¡ï¼ˆé€‚é…LevelSelectUIçš„è°ƒç”¨ï¼‰
     public void LoadLevel(LevelData levelData)
     {
         if (levelData == null) return;
 
-        // Ğ¶ÔØµ±Ç°³¡¾°£¬ÔÙ¼ÓÔØÄ¿±ê¹Ø¿¨
+        // å¸è½½å½“å‰åœºæ™¯ï¼Œå†åŠ è½½ç›®æ ‡å…³å¡
         if (currentLoadedScene.IsValid())
         {
             UnloadCurrentScene(() => LoadLevelInternal(levelData));

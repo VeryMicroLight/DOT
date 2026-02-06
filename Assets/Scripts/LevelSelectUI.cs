@@ -6,11 +6,11 @@ public class LevelSelectUI : MonoBehaviour
 {
     public static LevelSelectUI Instance;
 
-    [Header("¹Ø¿¨°´Å¥Óë¶ÔÓ¦Êı¾İ")]
-    // ÊÖ¶¯°ó¶¨°´Å¥ºÍ¹Ø¿¨
+    [Header("å…³å¡æŒ‰é’®ä¸å¯¹åº”æ•°æ®")]
+    // æ‰‹åŠ¨ç»‘å®šæŒ‰é’®å’Œå…³å¡
     public List<LevelButtonBinding> levelButtonBindings = new List<LevelButtonBinding>();
 
-    // ¼ÇÂ¼ÒÑ¼ÓÔØ¹ıµÄ¹Ø¿¨Ë÷Òı
+    // è®°å½•å·²åŠ è½½è¿‡çš„å…³å¡ç´¢å¼•
     private HashSet<int> loadedLevelIndexes = new HashSet<int>();
 
     private void Awake()
@@ -27,13 +27,13 @@ public class LevelSelectUI : MonoBehaviour
 
     private void Start()
     {
-        //PlayerPrefs.DeleteKey("LoadedLevelIndexes"); // ÁÙÊ±Çå¿Õ¹Ø¿¨¼ÇÂ¼£¬ÔËĞĞÒ»´ÎºóÉ¾µô
+        //PlayerPrefs.DeleteKey("LoadedLevelIndexes"); // ä¸´æ—¶æ¸…ç©ºå…³å¡è®°å½•ï¼Œè¿è¡Œä¸€æ¬¡ååˆ æ‰
         //PlayerPrefs.Save();
-        // ´Ó³Ö¾Ã»¯Êı¾İ¼ÓÔØÒÑ½âËø¹Ø¿¨
+        // ä»æŒä¹…åŒ–æ•°æ®åŠ è½½å·²è§£é”å…³å¡
         LoadLoadedLevelRecords();
-        // °ó¶¨°´Å¥µã»÷ÊÂ¼ş + Ë¢ĞÂ°´Å¥×´Ì¬
+        // ç»‘å®šæŒ‰é’®ç‚¹å‡»äº‹ä»¶ + åˆ·æ–°æŒ‰é’®çŠ¶æ€
         InitLevelButtons();
-        // Ä¬ÈÏÒş²Ø¹Ø¿¨Ñ¡ÔñUI
+        // é»˜è®¤éšè—å…³å¡é€‰æ‹©UI
         HideLevelSelect();
     }
 
@@ -41,37 +41,37 @@ public class LevelSelectUI : MonoBehaviour
     {
         foreach (var binding in levelButtonBindings)
         {
-            // Ìø¹ıÎŞĞ§°ó¶¨£¨°´Å¥»ò¹Ø¿¨Êı¾İÎª¿Õ£©
+            // è·³è¿‡æ— æ•ˆç»‘å®šï¼ˆæŒ‰é’®æˆ–å…³å¡æ•°æ®ä¸ºç©ºï¼‰
             if (binding.levelButton == null || binding.levelData == null)
             {
-                Debug.LogWarning("´æÔÚÎŞĞ§µÄ¹Ø¿¨°´Å¥°ó¶¨");
+                Debug.LogWarning("å­˜åœ¨æ— æ•ˆçš„å…³å¡æŒ‰é’®ç»‘å®š");
                 continue;
             }
 
-            // °ó¶¨°´Å¥µã»÷ÊÂ¼ş
+            // ç»‘å®šæŒ‰é’®ç‚¹å‡»äº‹ä»¶
             LevelData targetData = binding.levelData;
             binding.levelButton.onClick.AddListener(() => OnLevelButtonClicked(targetData));
 
-            // ³õÊ¼»¯°´Å¥×´Ì¬
+            // åˆå§‹åŒ–æŒ‰é’®çŠ¶æ€
             RefreshSingleButtonStatus(binding);
         }
     }
 
     /// <summary>
-    /// Ë¢ĞÂµ¥¸ö°´Å¥µÄ½âËø/Ëø¶¨×´Ì¬
+    /// åˆ·æ–°å•ä¸ªæŒ‰é’®çš„è§£é”/é”å®šçŠ¶æ€
     /// </summary>
     private void RefreshSingleButtonStatus(LevelButtonBinding binding)
     {
         if (binding.levelButton == null || binding.levelData == null) return;
 
-        // ºËĞÄÂß¼­£ºÒÑ¼ÓÔØ¹ıÔÚloadedLevelIndexesÖĞÔò½âËø£¬·ñÔòËø¶¨
+        // æ ¸å¿ƒé€»è¾‘ï¼šå·²åŠ è½½è¿‡åœ¨loadedLevelIndexesä¸­åˆ™è§£é”ï¼Œå¦åˆ™é”å®š
         bool isUnlocked = loadedLevelIndexes.Contains(binding.levelData.levelIndex);
         binding.levelButton.interactable = isUnlocked;
 
     }
 
 
-    //Ë¢ĞÂËùÓĞ°´Å¥µÄ×´Ì¬£¨¹Ø¿¨¼ÓÔØ³É¹¦ºóµ÷ÓÃ£©
+    //åˆ·æ–°æ‰€æœ‰æŒ‰é’®çš„çŠ¶æ€ï¼ˆå…³å¡åŠ è½½æˆåŠŸåè°ƒç”¨ï¼‰
     public void RefreshAllLevelButtonsStatus()
     {
         foreach (var binding in levelButtonBindings)
@@ -81,19 +81,19 @@ public class LevelSelectUI : MonoBehaviour
     }
 
 
-    // °´Å¥µã»÷»Øµ÷£º¼ÓÔØ¶ÔÓ¦¹Ø¿¨
+    // æŒ‰é’®ç‚¹å‡»å›è°ƒï¼šåŠ è½½å¯¹åº”å…³å¡
     private void OnLevelButtonClicked(LevelData levelData)
     {
         if (levelData == null) return;
-        // µ÷ÓÃÈ«¾Ö¹ÜÀíÆ÷¼ÓÔØ¹Ø¿¨
+        // è°ƒç”¨å…¨å±€ç®¡ç†å™¨åŠ è½½å…³å¡
         PersistentSceneManager.Instance.LoadLevel(levelData);
     }
 
-    //¼ÓÔØ³Ö¾Ã»¯µÄÒÑ¼ÓÔØ¹Ø¿¨¼ÇÂ¼£¨PlayerPrefs£¬ÖØÆôÓÎÏ·²»¶ªÊ§£©
+    //åŠ è½½æŒä¹…åŒ–çš„å·²åŠ è½½å…³å¡è®°å½•ï¼ˆPlayerPrefsï¼Œé‡å¯æ¸¸æˆä¸ä¸¢å¤±ï¼‰
     public void LoadLoadedLevelRecords()
     {
         loadedLevelIndexes.Clear();
-        // ¶ÁÈ¡±£´æµÄÒÑ¼ÓÔØ¹Ø¿¨×Ö·û´®
+        // è¯»å–ä¿å­˜çš„å·²åŠ è½½å…³å¡å­—ç¬¦ä¸²
         string loadedLevelsStr = PlayerPrefs.GetString("LoadedLevelIndexes", "");
         if (!string.IsNullOrEmpty(loadedLevelsStr))
         {
@@ -107,7 +107,7 @@ public class LevelSelectUI : MonoBehaviour
             }
         }
 
-        //// Ä¬ÈÏ½âËøµÚ1¹Ø£¨±ÜÃâÍæ¼ÒÎŞ¹Ø¿¨¿ÉÍæ£©
+        //// é»˜è®¤è§£é”ç¬¬1å…³ï¼ˆé¿å…ç©å®¶æ— å…³å¡å¯ç©ï¼‰
         //if (loadedLevelIndexes.Count == 0 && levelButtonBindings.Count > 0)
         //{
         //    int firstLevelIndex = levelButtonBindings[0].levelData.levelIndex;
@@ -116,28 +116,28 @@ public class LevelSelectUI : MonoBehaviour
     }
 
     /// <summary>
-    /// Ìí¼ÓÒÑ¼ÓÔØ¹Ø¿¨¼ÇÂ¼²¢³Ö¾Ã»¯
+    /// æ·»åŠ å·²åŠ è½½å…³å¡è®°å½•å¹¶æŒä¹…åŒ–
     /// </summary>
     public void AddLoadedLevelRecord(int levelIndex)
     {
         if (loadedLevelIndexes.Contains(levelIndex)) return;
 
-        // Ìí¼Óµ½ÄÚ´æ¼¯ºÏ
+        // æ·»åŠ åˆ°å†…å­˜é›†åˆ
         loadedLevelIndexes.Add(levelIndex);
 
-        // ³Ö¾Ã»¯µ½PlayerPrefs
+        // æŒä¹…åŒ–åˆ°PlayerPrefs
         string loadedLevelsStr = string.Join(",", loadedLevelIndexes);
         PlayerPrefs.SetString("LoadedLevelIndexes", loadedLevelsStr);
         PlayerPrefs.Save();
 
-        // Ë¢ĞÂ°´Å¥×´Ì¬
+        // åˆ·æ–°æŒ‰é’®çŠ¶æ€
         RefreshAllLevelButtonsStatus();
     }
 
     public void ShowLevelSelect()
     {
         gameObject.SetActive(true);
-        // ÏÔÊ¾Ê±Ë¢ĞÂÒ»´Î°´Å¥×´Ì¬£¬È·±£Êı¾İÍ¬²½
+        // æ˜¾ç¤ºæ—¶åˆ·æ–°ä¸€æ¬¡æŒ‰é’®çŠ¶æ€ï¼Œç¡®ä¿æ•°æ®åŒæ­¥
         RefreshAllLevelButtonsStatus();
     }
 
@@ -147,12 +147,12 @@ public class LevelSelectUI : MonoBehaviour
     }
 
     /// <summary>
-    /// °´Å¥-¹Ø¿¨Êı¾İ°ó¶¨Àà
+    /// æŒ‰é’®-å…³å¡æ•°æ®ç»‘å®šç±»
     /// </summary>
     [System.Serializable]
     public class LevelButtonBinding
     {
-        public Button levelButton; // ÊÖ¶¯´´½¨µÄ¹Ø¿¨°´Å¥
-        public LevelData levelData; // °´Å¥¶ÔÓ¦µÄ¹Ø¿¨Êı¾İ
+        public Button levelButton; // æ‰‹åŠ¨åˆ›å»ºçš„å…³å¡æŒ‰é’®
+        public LevelData levelData; // æŒ‰é’®å¯¹åº”çš„å…³å¡æ•°æ®
     }
 }

@@ -16,7 +16,7 @@ public class SettingManager : MonoBehaviour
     }
     private void ToggleSettingPanel()
     {
-        if (SettingPanel.activeInHierarchy)   //²Ëµ¥Èç¹ûÒÑ¾­¼¤»îÁË£¬ÄÇÃ´ÔÙµãÒ»ÏÂ¾Í¹Ø±Õ
+        if (SettingPanel.activeInHierarchy)   //èœå•å¦‚æœå·²ç»æ¿€æ´»äº†ï¼Œé‚£ä¹ˆå†ç‚¹ä¸€ä¸‹å°±å…³é—­
         {
             SettingPanel.SetActive(false);
             Time.timeScale = 1;
@@ -31,12 +31,12 @@ public class SettingManager : MonoBehaviour
     {
         if (PersistentSceneManager.Instance != null)
         {
-            // µ÷ÓÃÈ«¾Ö¹ÜÀíÆ÷µÄ·µ»ØÖ÷²Ëµ¥·½·¨
+            // è°ƒç”¨å…¨å±€ç®¡ç†å™¨çš„è¿”å›ä¸»èœå•æ–¹æ³•
             PersistentSceneManager.Instance.ReturnToMainMenu();
         }
         else
         {
-            Debug.LogError("ÊµÀı²»´æÔÚ£¬ÎŞ·¨·µ»ØÖ÷²Ëµ¥");
+            Debug.LogError("å®ä¾‹ä¸å­˜åœ¨ï¼Œæ— æ³•è¿”å›ä¸»èœå•");
         }
     }
 }

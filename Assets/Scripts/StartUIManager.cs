@@ -1,6 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
-// ±à¼­Æ÷Ä£Ê½ÏÂÍË³öĞèÒªÒıÓÃÕâ¸öÃüÃû¿Õ¼ä
+// ç¼–è¾‘å™¨æ¨¡å¼ä¸‹é€€å‡ºéœ€è¦å¼•ç”¨è¿™ä¸ªå‘½åç©ºé—´
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -19,63 +19,63 @@ public class StartUIManager : MonoBehaviour
     }
 
 
-    //ĞÂ¿ªÊ¼£ºÖØÖÃ°´Å¥²¢¼ÓÔØµÚ1¹Ø
+    //æ–°å¼€å§‹ï¼šé‡ç½®æŒ‰é’®å¹¶åŠ è½½ç¬¬1å…³
     private void OnNewGameClick()
     {
         if (PersistentSceneManager.Instance != null)
         {
-            //ÖØÖÃ¹Ø¿¨½âËø¼ÇÂ¼
+            //é‡ç½®å…³å¡è§£é”è®°å½•
             ResetLevelUnlockRecords();
 
-            //Ë¢ĞÂÑ¡¹Ø½çÃæ°´Å¥×´Ì¬
+            //åˆ·æ–°é€‰å…³ç•Œé¢æŒ‰é’®çŠ¶æ€
             if (LevelSelectUI.Instance != null)
             {
                 LevelSelectUI.Instance.RefreshAllLevelButtonsStatus();
             }
 
-            //¼ÓÔØµÚ1¹Ø
+            //åŠ è½½ç¬¬1å…³
             PersistentSceneManager.Instance.LoadLevelByIndex(1);
         }
     }
 
-    // ÖØÖÃ¹Ø¿¨½âËø¼ÇÂ¼
+    // é‡ç½®å…³å¡è§£é”è®°å½•
     private void ResetLevelUnlockRecords()
     {
-        // Çå¿ÕÔ­ÓĞ¼ÇÂ¼£¬Ö»±£ÁôµÚÒ»¹ØµÄË÷Òı
+        // æ¸…ç©ºåŸæœ‰è®°å½•ï¼Œåªä¿ç•™ç¬¬ä¸€å…³çš„ç´¢å¼•
         PlayerPrefs.SetString("LoadedLevelIndexes", "1");
         PlayerPrefs.Save();
 
-        // Í¬²½¸üĞÂLevelSelectUIµÄÄÚ´æÖĞµÄ¼ÇÂ¼£¨±ÜÃâUI¶ÁÈ¡¾ÉÊı¾İ£©
+        // åŒæ­¥æ›´æ–°LevelSelectUIçš„å†…å­˜ä¸­çš„è®°å½•ï¼ˆé¿å…UIè¯»å–æ—§æ•°æ®ï¼‰
         if (LevelSelectUI.Instance != null)
         {
             LevelSelectUI.Instance.LoadLoadedLevelRecords();
         }
 
-        Debug.Log("¹Ø¿¨½âËø¼ÇÂ¼ÒÑÖØÖÃ£¬½ö±£ÁôµÚÒ»¹Ø");
+        Debug.Log("å…³å¡è§£é”è®°å½•å·²é‡ç½®ï¼Œä»…ä¿ç•™ç¬¬ä¸€å…³");
     }
 
 
-    // ¼ÌĞøÓÎÏ·£º¼ÓÔØÍæ¼Ò½âËøµÄ×î¸ß¹Ø¿¨
+    // ç»§ç»­æ¸¸æˆï¼šåŠ è½½ç©å®¶è§£é”çš„æœ€é«˜å…³å¡
     private void OnContinueGameClick()
     {
-        // ±ß½çÅĞ¶Ï£ºÈ«¾Ö¹ÜÀíÆ÷Îª¿ÕÔòÖ±½Ó·µ»Ø
+        // è¾¹ç•Œåˆ¤æ–­ï¼šå…¨å±€ç®¡ç†å™¨ä¸ºç©ºåˆ™ç›´æ¥è¿”å›
         if (PersistentSceneManager.Instance == null)
         {
-            Debug.LogError("PersistentSceneManager ÊµÀı²»´æÔÚ");
+            Debug.LogError("PersistentSceneManager å®ä¾‹ä¸å­˜åœ¨");
             return;
         }
 
-        // ´ÓPlayerPrefs¶ÁÈ¡ÒÑ½âËø¹Ø¿¨¼ÇÂ¼£¨ºÍLevelSelectUIÂß¼­Ò»ÖÂ£©
+        // ä»PlayerPrefsè¯»å–å·²è§£é”å…³å¡è®°å½•ï¼ˆå’ŒLevelSelectUIé€»è¾‘ä¸€è‡´ï¼‰
         string loadedLevelsStr = PlayerPrefs.GetString("LoadedLevelIndexes", "");
         if (string.IsNullOrEmpty(loadedLevelsStr))
         {
-            // Ã»ÓĞÈÎºÎ¹Ø¿¨¼ÇÂ¼£¬Ä¬ÈÏ¼ÓÔØµÚ1¹Ø
+            // æ²¡æœ‰ä»»ä½•å…³å¡è®°å½•ï¼Œé»˜è®¤åŠ è½½ç¬¬1å…³
             PersistentSceneManager.Instance.LoadLevelByIndex(1);
-            Debug.Log("ÎŞÒÑ±£´æ½ø¶È£¬Ä¬ÈÏ¼ÓÔØµÚ1¹Ø");
+            Debug.Log("æ— å·²ä¿å­˜è¿›åº¦ï¼Œé»˜è®¤åŠ è½½ç¬¬1å…³");
             return;
         }
 
-        // ½âÎö×Ö·û´®£¬ÕÒµ½×î´óµÄ¹Ø¿¨Ë÷Òı
+        // è§£æå­—ç¬¦ä¸²ï¼Œæ‰¾åˆ°æœ€å¤§çš„å…³å¡ç´¢å¼•
         string[] indexArr = loadedLevelsStr.Split(',');
         int maxLevelIndex = 0;
         foreach (string indexStr in indexArr)
@@ -86,32 +86,32 @@ public class StartUIManager : MonoBehaviour
             }
         }
 
-        // ¼ÓÔØ×î¸ß¹Ø¿¨
+        // åŠ è½½æœ€é«˜å…³å¡
         if (maxLevelIndex > 0)
         {
             PersistentSceneManager.Instance.LoadLevelByIndex(maxLevelIndex);
-            Debug.Log("¼ÌĞøÓÎÏ·£º¼ÓÔØ×î¸ß¹Ø¿¨ " + maxLevelIndex);
+            Debug.Log("ç»§ç»­æ¸¸æˆï¼šåŠ è½½æœ€é«˜å…³å¡ " + maxLevelIndex);
         }
         else
         {
-            // ½âÎöÊ§°Ü£¬Ä¬ÈÏ¼ÓÔØµÚ1¹Ø
+            // è§£æå¤±è´¥ï¼Œé»˜è®¤åŠ è½½ç¬¬1å…³
             PersistentSceneManager.Instance.LoadLevelByIndex(1);
-            Debug.Log("½ø¶È½âÎöÊ§°Ü£¬Ä¬ÈÏ¼ÓÔØµÚ1¹Ø");
+            Debug.Log("è¿›åº¦è§£æå¤±è´¥ï¼Œé»˜è®¤åŠ è½½ç¬¬1å…³");
         }
     }
 
 
-    // ÍË³öÓÎÏ·£ºÇø·Ö±à¼­Æ÷Ä£Ê½ºÍ´ò°üºóÄ£Ê½
+    // é€€å‡ºæ¸¸æˆï¼šåŒºåˆ†ç¼–è¾‘å™¨æ¨¡å¼å’Œæ‰“åŒ…åæ¨¡å¼
     private void OnQuitGameClick()
     {
-        // ´ò°üºóµÄÓÎÏ·£¬Ö±½ÓÍË³öÓ¦ÓÃ
+        // æ‰“åŒ…åçš„æ¸¸æˆï¼Œç›´æ¥é€€å‡ºåº”ç”¨
         Application.Quit();
 
-        // ±à¼­Æ÷Ä£Ê½ÏÂ£¬ÍË³ö²¥·ÅÄ£Ê½£¨½öÔÚ±à¼­Æ÷ÖĞÉúĞ§£©
+        // ç¼–è¾‘å™¨æ¨¡å¼ä¸‹ï¼Œé€€å‡ºæ’­æ”¾æ¨¡å¼ï¼ˆä»…åœ¨ç¼–è¾‘å™¨ä¸­ç”Ÿæ•ˆï¼‰
 #if UNITY_EDITOR
         EditorApplication.ExitPlaymode();
 #endif
 
-        Debug.Log("ÍË³öÓÎÏ·");
+        Debug.Log("é€€å‡ºæ¸¸æˆ");
     }
 }
