@@ -4,23 +4,27 @@ using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.ResourceManagement.ResourceProviders;
 using UnityEngine.SceneManagement;
 using System.Collections.Generic;
+using System.Collections; // 协程
 
 public class PersistentSceneManager : MonoBehaviour
 {
-    public static PersistentSceneManager Instance; // 单例，全局调用
+    public static PersistentSceneManager Instance;
 
     [Header("开始场景配置")]
-    public AssetReference startSceneRef; 
+    public AssetReference startSceneRef;
 
     [Header("所有关卡数据")]
-    public List<LevelData> allLevelDatas; 
-    private AsyncOperationHandle<SceneInstance> currentLoadedScene; // 记录当前加载的场景
-    private LevelData currentLevelData; // 记录当前关卡数据
+    public List<LevelData> allLevelDatas;
+    private AsyncOperationHandle<SceneInstance> currentLoadedScene;
+    private LevelData currentLevelData;
     public LevelData CurrentLevelData => currentLevelData;
+
+    // 渐变时长
+    [Header("场景渐变配置")]
+    public float sceneFadeDuration = 0.5f;
 
     private void Awake()
     {
-        // 单例初始化，确保常驻场景唯一
         if (Instance == null) Instance = this;
         else Destroy(gameObject);
         DontDestroyOnLoad(gameObject);
@@ -28,21 +32,22 @@ public class PersistentSceneManager : MonoBehaviour
 
     private void Start()
     {
-        // 游戏启动时自动加载开始场景
+        // 游戏启动时加载开始场景
         LoadStartScene();
     }
 
-    #region 加载开始场景
+    #region 加载开始场景（新增渐变）
     public void LoadStartScene()
     {
-        // 先卸载当前可能存在的场景，再加载开始场景
         if (currentLoadedScene.IsValid())
         {
-            UnloadCurrentScene(() => LoadStartSceneInternal());
+            // 先渐黑,卸载场景,加载开始场景,渐显
+            StartCoroutine(UnloadAndLoadSceneCoroutine(LoadStartSceneInternal));
         }
         else
         {
-            LoadStartSceneInternal();
+            // 直接渐黑,加载开始场景,渐显
+            StartCoroutine(FadeAndLoadSceneCoroutine(LoadStartSceneInternal));
         }
     }
 
@@ -54,19 +59,28 @@ public class PersistentSceneManager : MonoBehaviour
             {
                 currentLoadedScene = handle;
                 Debug.Log("开始场景加载成功");
+                // 场景加载完成后，渐显
+                if (FadeUI.Instance != null)
+                {
+                    FadeUI.Instance.FadeIn(sceneFadeDuration);
+                }
             }
             else
             {
                 Debug.LogError("开始场景加载失败：" + handle.OperationException);
+                // 加载失败也恢复显示
+                if (FadeUI.Instance != null)
+                {
+                    FadeUI.Instance.FadeIn(sceneFadeDuration);
+                }
             }
         };
     }
     #endregion
 
-    #region 加载指定关卡（从开始界面点击调用）
+    #region 加载指定关卡（新增渐变）
     public void LoadLevelByIndex(int targetIndex)
     {
-        // 根据序号匹配关卡数据
         LevelData targetLevel = allLevelDatas.Find(data => data.levelIndex == targetIndex);
         if (targetLevel == null)
         {
@@ -74,55 +88,91 @@ public class PersistentSceneManager : MonoBehaviour
             return;
         }
 
-        // 卸载当前场景，再加载目标关卡
         if (currentLoadedScene.IsValid())
         {
-            UnloadCurrentScene(() => LoadLevelInternal(targetLevel));
+            StartCoroutine(UnloadAndLoadSceneCoroutine(() => LoadLevelInternal(targetLevel)));
         }
         else
         {
-            LoadLevelInternal(targetLevel);
+            StartCoroutine(FadeAndLoadSceneCoroutine(() => LoadLevelInternal(targetLevel)));
         }
     }
-    //加载下一关（关卡胜利后调用）
+
     public void LoadNextLevel()
     {
         if (currentLevelData == null) return;
-        // 下一关序号=当前序号+1
         LoadLevelByIndex(currentLevelData.levelIndex + 1);
     }
     #endregion
 
-    #region 内部方法：加载关卡、卸载当前场景
+    #region 整合渐变+场景加载/卸载
+    // 先渐黑→执行场景加载逻辑
+    private IEnumerator FadeAndLoadSceneCoroutine(System.Action loadAction)
+    {
+        // 先渐黑
+        if (FadeUI.Instance != null)
+        {
+            yield return FadeUI.Instance.FadeOut(sceneFadeDuration);
+        }
+        // 执行加载逻辑
+        loadAction?.Invoke();
+    }
+
+    // 先渐黑,卸载当前场景,执行新场景加载逻辑
+    private IEnumerator UnloadAndLoadSceneCoroutine(System.Action loadAction)
+    {
+        // 先渐黑
+        if (FadeUI.Instance != null)
+        {
+            yield return FadeUI.Instance.FadeOut(sceneFadeDuration);
+        }
+        // 卸载当前场景,等待卸载完成
+        bool unloadDone = false;
+        UnloadCurrentScene(() => unloadDone = true);
+        while (!unloadDone)
+        {
+            yield return null;
+        }
+        // 执行新场景加载逻辑
+        loadAction?.Invoke();
+    }
+
     private void LoadLevelInternal(LevelData levelData)
     {
         currentLevelData = levelData;
-        // 加载Addressable关卡（叠加模式，保留常驻场景）
         levelData.sceneReference.LoadSceneAsync(LoadSceneMode.Additive, true).Completed += (handle) =>
         {
             if (handle.Status == AsyncOperationStatus.Succeeded)
             {
                 currentLoadedScene = handle;
-                SceneManager.SetActiveScene(handle.Result.Scene); // 设置关卡为活动场景
+                SceneManager.SetActiveScene(handle.Result.Scene);
                 Debug.Log("关卡" + levelData.levelIndex + "加载成功：" + levelData.levelName);
 
-                // 关键修改：关卡加载成功后，通知LevelSelectUI添加已加载记录（解锁该关卡）
                 if (LevelSelectUI.Instance != null)
                 {
                     LevelSelectUI.Instance.AddLoadedLevelRecord(levelData.levelIndex);
+                }
+                // 关卡加载完成后，渐显
+                if (FadeUI.Instance != null)
+                {
+                    FadeUI.Instance.FadeIn(sceneFadeDuration);
                 }
             }
             else
             {
                 Debug.LogError("关卡加载失败：" + handle.OperationException);
                 currentLevelData = null;
+                // 加载失败也恢复显示
+                if (FadeUI.Instance != null)
+                {
+                    FadeUI.Instance.FadeIn(sceneFadeDuration);
+                }
             }
         };
     }
 
     private void UnloadCurrentScene(System.Action onUnloaded = null)
     {
-        // 用Addressable卸载，保证资源释放
         Addressables.UnloadSceneAsync(currentLoadedScene).Completed += (handle) =>
         {
             if (handle.Status == AsyncOperationStatus.Succeeded)
@@ -130,58 +180,53 @@ public class PersistentSceneManager : MonoBehaviour
                 Debug.Log("当前场景卸载成功");
                 currentLoadedScene = default;
                 currentLevelData = null;
-                onUnloaded?.Invoke(); // 卸载完成后执行回调
+                onUnloaded?.Invoke();
             }
             else
             {
                 Debug.LogError("场景卸载失败：" + handle.OperationException);
+                onUnloaded?.Invoke(); // 即使失败也执行回调，避免卡住
             }
         };
     }
     #endregion
 
-    public void ReturnToMainMenu()      //返回主菜单
+    public void ReturnToMainMenu()
     {
-        //先卸载当前关卡场景
         if (currentLoadedScene.IsValid())
         {
-            UnloadCurrentScene(() =>
+            // 返回主菜单也加渐变
+            StartCoroutine(UnloadAndLoadSceneCoroutine(() =>
             {
-                // 卸载完成后，重新加载主菜单场景
                 LoadStartSceneInternal();
                 Debug.Log("已卸载当前关卡，回到主菜单");
-            });
+            }));
         }
         else
         {
-            // 如果没有加载中的关卡，直接加载主菜单
-            LoadStartSceneInternal();
+            LoadStartScene();
         }
     }
 
+    public void LoadLevel(LevelData levelData)
+    {
+        if (levelData == null) return;
 
-    // 防止内存泄漏，退出时释放
+        if (currentLoadedScene.IsValid())
+        {
+            StartCoroutine(UnloadAndLoadSceneCoroutine(() => LoadLevelInternal(levelData)));
+        }
+        else
+        {
+            StartCoroutine(FadeAndLoadSceneCoroutine(() => LoadLevelInternal(levelData)));
+        }
+    }
+
     private void OnDestroy()
     {
         if (currentLoadedScene.IsValid())
         {
             Addressables.Release(currentLoadedScene);
-        }
-    }
-
-    //直接通过LevelData加载关卡（适配LevelSelectUI的调用）
-    public void LoadLevel(LevelData levelData)
-    {
-        if (levelData == null) return;
-
-        // 卸载当前场景，再加载目标关卡
-        if (currentLoadedScene.IsValid())
-        {
-            UnloadCurrentScene(() => LoadLevelInternal(levelData));
-        }
-        else
-        {
-            LoadLevelInternal(levelData);
         }
     }
 }

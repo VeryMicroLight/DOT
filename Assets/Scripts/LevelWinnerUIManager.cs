@@ -3,30 +3,30 @@ using UnityEngine.UI;
 
 public class LevelWinnerUIManager : MonoBehaviour
 {
-    [SerializeField] private Button nextLevelBtn; // ÏÂÒ»¹Ø°´Å¥
-    [SerializeField] private Button backToStartBtn; // ·µ»Ø¿ªÊ¼½çÃæ°´Å¥
-    [SerializeField] private GameObject winnerPanel; // Ê¤ÀûÃæ°å£¨Ä¬ÈÏÒş²Ø£©
+    [SerializeField] private Button nextLevelBtn; // ä¸‹ä¸€å…³æŒ‰é’®
+    [SerializeField] private Button backToStartBtn; // è¿”å›å¼€å§‹ç•Œé¢æŒ‰é’®
+    [SerializeField] private GameObject winnerPanel; // èƒœåˆ©é¢æ¿ï¼ˆé»˜è®¤éšè—ï¼‰
 
     private void Awake()
     {
         nextLevelBtn.onClick.AddListener(OnNextLevelClick);
         backToStartBtn.onClick.AddListener(OnBackToStartClick);
-        winnerPanel.SetActive(false); // ³õÊ¼Òş²ØÊ¤ÀûÃæ°å
+       // winnerPanel.SetActive(false); // åˆå§‹éšè—èƒœåˆ©é¢æ¿
     }
 
-    // Íâ²¿µ÷ÓÃ£º¹Ø¿¨Ê¤ÀûÊ±ÏÔÊ¾Ãæ°å£¨ÈçÍæ¼Ò´¥´ïÖÕµã¡¢ÏûÃğËùÓĞµĞÈËÊ±µ÷ÓÃ£©
+    // å¤–éƒ¨è°ƒç”¨ï¼šå…³å¡èƒœåˆ©æ—¶æ˜¾ç¤ºé¢æ¿ï¼ˆå¦‚ç©å®¶è§¦è¾¾ç»ˆç‚¹ã€æ¶ˆç­æ‰€æœ‰æ•Œäººæ—¶è°ƒç”¨ï¼‰
     public void ShowWinnerPanel()
     {
         winnerPanel.SetActive(true);
     }
 
-    // µã»÷ÏÂÒ»¹Ø
+    // ç‚¹å‡»ä¸‹ä¸€å…³
     private void OnNextLevelClick()
     {
         PersistentSceneManager.Instance.LoadNextLevel();
     }
 
-    // µã»÷·µ»Ø¿ªÊ¼½çÃæ
+    // ç‚¹å‡»è¿”å›å¼€å§‹ç•Œé¢
     private void OnBackToStartClick()
     {
         PersistentSceneManager.Instance.LoadStartScene();

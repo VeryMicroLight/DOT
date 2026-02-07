@@ -7,10 +7,10 @@ using TMPro;
 
 public class Collections : MonoBehaviour
 {
-    //ÅÆÃæ
+    //ç‰Œé¢
     public Sprite sprite;
 
-    //¿¨ÅÆÃû×ÖÒÔ¼°¿¨ÅÆÃèÊö
+    //å¡ç‰Œåå­—ä»¥åŠå¡ç‰Œæè¿°
     public string name;
     public string issue;
 
@@ -20,7 +20,7 @@ public class Collections : MonoBehaviour
     private TMP_Text cardIssueText;
     private Transform Got;
     private Image myImage;
-
+    public GameObject NextButton;
 
 
     private void Awake()
@@ -53,11 +53,14 @@ public class Collections : MonoBehaviour
     {
 
      /*
-            ¼ÓÉÏ<color=red>¾Í¿ÉÒÔÈÃÕâ¸ö±êÊ¶·ûÖ®ºóµÄËùÓĞÎÄ±¾±äºì£¬ÏàÓ¦µÄ£¬ÔÚ¾ä¶ÎÄ©Î²¼ÓÉÏ</color>¾Í¿ÉÒÔ°ÑÑÕÉ«±ä»ØÈ¥     
+            åŠ ä¸Š<color=red>å°±å¯ä»¥è®©è¿™ä¸ªæ ‡è¯†ç¬¦ä¹‹åçš„æ‰€æœ‰æ–‡æœ¬å˜çº¢ï¼Œç›¸åº”çš„ï¼Œåœ¨å¥æ®µæœ«å°¾åŠ ä¸Š</color>å°±å¯ä»¥æŠŠé¢œè‰²å˜å›å»     
      */
         CardName.transform.DOScale(Vector3.one, .2f);
         CardName.transform.DOShakePosition(1, 7);
     }
 
-    
+    public void ShowNextButton()
+    {
+        NextButton.SetActive(true);
+    }
 }
