@@ -3902,6 +3902,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2578593081662325832, guid: 6488742d2c1cbb148a07d7856a088dfb, type: 3}
+      propertyPath: m_PixelPerfect
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2578593081662325832, guid: 6488742d2c1cbb148a07d7856a088dfb, type: 3}
+      propertyPath: m_SortingOrder
+      value: -1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2578593081662325832, guid: 6488742d2c1cbb148a07d7856a088dfb, type: 3}
+      propertyPath: m_TargetDisplay
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6047336063283348890, guid: 6488742d2c1cbb148a07d7856a088dfb, type: 3}
       propertyPath: m_Name
       value: CardCanvas

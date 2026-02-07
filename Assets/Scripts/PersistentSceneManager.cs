@@ -4,7 +4,8 @@ using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.ResourceManagement.ResourceProviders;
 using UnityEngine.SceneManagement;
 using System.Collections.Generic;
-using System.Collections; // 协程
+using System.Collections;
+
 
 public class PersistentSceneManager : MonoBehaviour
 {
@@ -19,7 +20,6 @@ public class PersistentSceneManager : MonoBehaviour
     private LevelData currentLevelData;
     public LevelData CurrentLevelData => currentLevelData;
 
-    // 渐变时长
     [Header("场景渐变配置")]
     public float sceneFadeDuration = 0.5f;
 
@@ -36,17 +36,17 @@ public class PersistentSceneManager : MonoBehaviour
         LoadStartScene();
     }
 
-    #region 加载开始场景（新增渐变）
+    #region 加载开始场景（适配动画事件）
     public void LoadStartScene()
     {
         if (currentLoadedScene.IsValid())
         {
-            // 先渐黑,卸载场景,加载开始场景,渐显
+            // 先渐黑→卸载场景→加载开始场景→渐显
             StartCoroutine(UnloadAndLoadSceneCoroutine(LoadStartSceneInternal));
         }
         else
         {
-            // 直接渐黑,加载开始场景,渐显
+            // 直接渐黑→加载开始场景→渐显
             StartCoroutine(FadeAndLoadSceneCoroutine(LoadStartSceneInternal));
         }
     }
@@ -59,10 +59,10 @@ public class PersistentSceneManager : MonoBehaviour
             {
                 currentLoadedScene = handle;
                 Debug.Log("开始场景加载成功");
-                // 场景加载完成后，渐显
+                // 场景加载完成后，启动淡入动画（等待动画完成）
                 if (FadeUI.Instance != null)
                 {
-                    FadeUI.Instance.FadeIn(sceneFadeDuration);
+                    StartCoroutine(FadeUI.Instance.FadeIn());
                 }
             }
             else
@@ -71,14 +71,14 @@ public class PersistentSceneManager : MonoBehaviour
                 // 加载失败也恢复显示
                 if (FadeUI.Instance != null)
                 {
-                    FadeUI.Instance.FadeIn(sceneFadeDuration);
+                    StartCoroutine(FadeUI.Instance.FadeIn());
                 }
             }
         };
     }
     #endregion
 
-    #region 加载指定关卡（新增渐变）
+    #region 加载指定关卡（适配动画事件）
     public void LoadLevelByIndex(int targetIndex)
     {
         LevelData targetLevel = allLevelDatas.Find(data => data.levelIndex == targetIndex);
@@ -105,28 +105,28 @@ public class PersistentSceneManager : MonoBehaviour
     }
     #endregion
 
-    #region 整合渐变+场景加载/卸载
-    // 先渐黑→执行场景加载逻辑
+    #region 整合渐变+场景加载/卸载（核心修改：等待动画事件完成）
+    // 先渐黑→执行场景加载逻辑（等待淡出动画完成）
     private IEnumerator FadeAndLoadSceneCoroutine(System.Action loadAction)
     {
-        // 先渐黑
+        // 等待淡出动画完全结束
         if (FadeUI.Instance != null)
         {
-            yield return FadeUI.Instance.FadeOut(sceneFadeDuration);
+            yield return StartCoroutine(FadeUI.Instance.FadeOut());
         }
         // 执行加载逻辑
         loadAction?.Invoke();
     }
 
-    // 先渐黑,卸载当前场景,执行新场景加载逻辑
+    // 先渐黑→卸载当前场景→执行新场景加载逻辑（等待淡出动画完成）
     private IEnumerator UnloadAndLoadSceneCoroutine(System.Action loadAction)
     {
-        // 先渐黑
+        // 等待淡出动画完全结束
         if (FadeUI.Instance != null)
         {
-            yield return FadeUI.Instance.FadeOut(sceneFadeDuration);
+            yield return StartCoroutine(FadeUI.Instance.FadeOut());
         }
-        // 卸载当前场景,等待卸载完成
+        // 卸载当前场景，等待卸载完成
         bool unloadDone = false;
         UnloadCurrentScene(() => unloadDone = true);
         while (!unloadDone)
@@ -152,10 +152,10 @@ public class PersistentSceneManager : MonoBehaviour
                 {
                     LevelSelectUI.Instance.AddLoadedLevelRecord(levelData.levelIndex);
                 }
-                // 关卡加载完成后，渐显
+                // 关卡加载完成后，启动淡入动画（等待动画完成）
                 if (FadeUI.Instance != null)
                 {
-                    FadeUI.Instance.FadeIn(sceneFadeDuration);
+                    StartCoroutine(FadeUI.Instance.FadeIn());
                 }
             }
             else
@@ -165,7 +165,7 @@ public class PersistentSceneManager : MonoBehaviour
                 // 加载失败也恢复显示
                 if (FadeUI.Instance != null)
                 {
-                    FadeUI.Instance.FadeIn(sceneFadeDuration);
+                    StartCoroutine(FadeUI.Instance.FadeIn());
                 }
             }
         };
@@ -195,7 +195,7 @@ public class PersistentSceneManager : MonoBehaviour
     {
         if (currentLoadedScene.IsValid())
         {
-            // 返回主菜单也加渐变
+            // 返回主菜单也加渐变（等待动画完成）
             StartCoroutine(UnloadAndLoadSceneCoroutine(() =>
             {
                 LoadStartSceneInternal();
