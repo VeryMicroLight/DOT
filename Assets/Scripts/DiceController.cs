@@ -88,7 +88,10 @@ public class DiceController : MonoBehaviour
 
     public void PushDice(Vector2 pushDir)
     {
-        if (isFlipping) return;
+        if (isFlipping)
+        {
+            return;
+        }
 
         // 确保一次只走1格
         Vector2 targetPos = (Vector2)transform.position + pushDir;

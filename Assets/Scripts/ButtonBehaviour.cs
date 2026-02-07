@@ -38,11 +38,7 @@ public class ButtonBehaviour : MonoBehaviour
                     if (hit.CompareTag("Dice"))
                     {
                         Debug.Log(hit.GetComponent<DiceController>().TopSideNumber());
-                        if (hit.GetComponent<DiceController>().TopSideNumber() == face)
-                        {
-                            rightPressed = true;
-                            OpenTheDoors();
-                        }
+                        
                     }
                     
                 }
@@ -54,13 +50,17 @@ public class ButtonBehaviour : MonoBehaviour
             Collider2D hit = Physics2D.OverlapBox((Vector2)(transform.position ), Vector2.one * .5f, 0);
             if (hit == null)
             {
-                
                 BeNotPressed();
-                
+            }
+            else if (hit.CompareTag("Dice"))
+            {
+                if (hit.GetComponent<DiceController>().TopSideNumber() == face && !runLevel.isMoving)
+                {
+                    rightPressed = true;
+                    OpenTheDoors();
+                }
             }
         }
-
-
     }
 
 
