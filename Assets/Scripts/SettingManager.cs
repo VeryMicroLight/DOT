@@ -31,6 +31,7 @@ public class SettingManager : MonoBehaviour
     {
         if (PersistentSceneManager.Instance != null)
         {
+            Time.timeScale = 1;
             // 调用全局管理器的返回主菜单方法
             PersistentSceneManager.Instance.ReturnToMainMenu();
         }

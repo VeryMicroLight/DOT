@@ -7,25 +7,67 @@ using UnityEditor;
 
 public class StartUIManager : MonoBehaviour
 {
-    [SerializeField] private Button newGameBtn;   
+    [SerializeField] private Button newGameBtn;
     [SerializeField] private Button continueGameBtn;
-    [SerializeField] private Button quitGameBtn;   
+    [SerializeField] private Button quitGameBtn;
 
     private void Awake()
     {
+        // 绑定按钮点击事件
         newGameBtn.onClick.AddListener(OnNewGameClick);
         continueGameBtn.onClick.AddListener(OnContinueGameClick);
         quitGameBtn.onClick.AddListener(OnQuitGameClick);
+
+        // 初始化时检查游戏进度，设置继续游戏按钮状态
+        CheckAndSetContinueButtonStatus();
     }
 
 
-    //新开始：重置按钮并加载第1关
+    //检查游戏进度并设置继续游戏按钮的可用状态
+    private void CheckAndSetContinueButtonStatus()
+    {
+        bool hasValidProgress = HasValidGameProgress();
+        // 设置按钮是否禁用的状态
+        continueGameBtn.interactable = hasValidProgress;
+    }
+
+    //检查关卡进度，需要至少第二关以上才可以继续游戏
+    private bool HasValidGameProgress()
+    {
+        // 读取已解锁关卡记录
+        string loadedLevelsStr = PlayerPrefs.GetString("LoadedLevelIndexes", "");
+
+        // 无记录，，无进度
+        if (string.IsNullOrEmpty(loadedLevelsStr))
+        {
+            return false;
+        }
+
+        // 解析关卡索引，判断是否解锁了第2关及以上
+        string[] indexArr = loadedLevelsStr.Split(',');
+        int maxLevelIndex = 0;
+        foreach (string indexStr in indexArr)
+        {
+            if (int.TryParse(indexStr, out int levelIndex) && levelIndex > maxLevelIndex)
+            {
+                maxLevelIndex = levelIndex;
+            }
+        }
+
+        // 只有解锁了第2关及以上，才算有进度
+        return maxLevelIndex > 1;
+    }
+
+    //新开始逻辑，重置按钮并加载第1关
     private void OnNewGameClick()
     {
         if (PersistentSceneManager.Instance != null)
         {
             //重置关卡解锁记录
             ResetLevelUnlockRecords();
+
+            // 新游戏后重新检查按钮状态
+            CheckAndSetContinueButtonStatus();
 
             //刷新选关界面按钮状态
             if (LevelSelectUI.Instance != null)
@@ -54,7 +96,6 @@ public class StartUIManager : MonoBehaviour
         Debug.Log("关卡解锁记录已重置，仅保留第一关");
     }
 
-
     // 继续游戏：加载玩家解锁的最高关卡
     private void OnContinueGameClick()
     {
@@ -65,7 +106,7 @@ public class StartUIManager : MonoBehaviour
             return;
         }
 
-        // 从PlayerPrefs读取已解锁关卡记录（和LevelSelectUI逻辑一致）
+        // 从PlayerPrefs读取已解锁关卡记录
         string loadedLevelsStr = PlayerPrefs.GetString("LoadedLevelIndexes", "");
         if (string.IsNullOrEmpty(loadedLevelsStr))
         {
@@ -100,8 +141,7 @@ public class StartUIManager : MonoBehaviour
         }
     }
 
-
-    // 退出游戏：区分编辑器模式和打包后模式
+    // 退出游戏
     private void OnQuitGameClick()
     {
         // 打包后的游戏，直接退出应用
@@ -113,5 +153,11 @@ public class StartUIManager : MonoBehaviour
 #endif
 
         Debug.Log("退出游戏");
+    }
+
+    //如果从其他界面返回主菜单，重新检查按钮状态
+    private void OnEnable()
+    {
+        CheckAndSetContinueButtonStatus();
     }
 }

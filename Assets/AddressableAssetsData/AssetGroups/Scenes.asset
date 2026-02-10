@@ -22,13 +22,33 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1e9c9861ebc97bf43b68c24128a7928c
+    m_Address: Assets/Scenes/Level5.unity
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 2cda990e2423bbf4892e6590ba056729
     m_Address: Assets/Scenes/Level1.unity
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 96faae45be9cce349a6452a2df4eb468
+    m_Address: Assets/Scenes/Level6.unity
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: a104cc7f72eb36540bec5ca1256591f3
     m_Address: Assets/Scenes/StartMenu.unity
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: aec0a842caa0c4a47acce632c7941b78
+    m_Address: Assets/Scenes/Level4.unity
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b1f55e4f5dcfe214b81fc7691e228ac5
+    m_Address: Assets/Scenes/Level3.unity
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
