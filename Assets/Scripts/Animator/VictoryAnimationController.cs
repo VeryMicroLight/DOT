@@ -56,7 +56,7 @@ public class VictoryAnimationController : MonoBehaviour
     /// <summary>
     /// 外部调用的胜利动画方法
     /// </summary>
-    /// <param name="position">胜利发生的位置</param>
+    /// <param _name="position">胜利发生的位置</param>
     public void PlayVictoryAnimation(Vector3 position)
     {
         victoryPosition = position;

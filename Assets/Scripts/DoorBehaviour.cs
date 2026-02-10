@@ -10,10 +10,12 @@ public class DoorBehaviour : MonoBehaviour
     public Sprite Unlock;
     private Tweener tweener;
     private SpriteRenderer spriteRenderer;
+    private BoxCollider2D collider;
 
     private void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
+        collider = GetComponent<BoxCollider2D>();
     }
 
 
@@ -21,6 +23,7 @@ public class DoorBehaviour : MonoBehaviour
     public IEnumerator Open()
     {
         spriteRenderer.sprite = Unlock;
+        collider.enabled = false;
         isOpen = true;
         spriteRenderer.sortingOrder = 0;
         Sequence sequence = DOTween.Sequence();

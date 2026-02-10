@@ -11,8 +11,8 @@ public class Collections : MonoBehaviour
     public Sprite sprite;
 
     //卡牌名字以及卡牌描述
-    public string name;
-    public string issue;
+    public string _name;
+    public string _issue;
 
     private Transform CardName;
     private TMP_Text cardNameText;
@@ -38,8 +38,8 @@ public class Collections : MonoBehaviour
     public void GetCard()
     {
         myImage.sprite = sprite;
-        cardNameText.text = name;
-        cardIssueText.text = issue;
+        cardNameText.text = _name;
+        cardIssueText.text = _issue;
        
 }
    

@@ -15,14 +15,14 @@ public class RunLevel : MonoBehaviour
     public bool isMoving = false;
     public bool isWin = false;
 
-    public GameObject Button;
+    //public GameObject Button;
     public GameObject Card;
     private ButtonBehaviour buttonBehaviour;
     private CardBehavior cardBehaviour;
     // Start is called before the first frame update
     private void Awake()
     {
-        buttonBehaviour = Button.GetComponent<ButtonBehaviour>();
+        //buttonBehaviour = Button.GetComponent<ButtonBehaviour>();
         cardBehaviour = Card.GetComponent<CardBehavior>();
         //playerController = Player.GetComponent<PlayerController>();
         inputControl = new PlayerInputControl();
@@ -41,12 +41,13 @@ public class RunLevel : MonoBehaviour
         if (isMoving)
         {
             cardBehaviour.CheckIfIsWin();
-            buttonBehaviour.CheckIfAnythingOnButton(inputDir, "enter");
+            //buttonBehaviour.CheckIfAnythingOnButton(inputDir, "enter");
+            CheckIfAnythingOnButton(inputDir, "enter");
         }
         else
         {
-            //buttonBehaviour.CheckIfAnythingOnButton(inputDir, "enter");
-            buttonBehaviour.CheckIfAnythingOnButton(inputDir, "leave");
+            //buttonBehaviour.CheckIfAnythingOnButton(inputDir, "leave");
+            CheckIfAnythingOnButton(inputDir, "leave");
             ReleaseAllDice();
         }
     }
@@ -65,7 +66,13 @@ public class RunLevel : MonoBehaviour
         }
     }
 
-    
+    private void CheckIfAnythingOnButton(Vector2 inputDir, string type)
+    {
+        foreach (Transform button in Buttons)
+        {
+            button.GetComponent<ButtonBehaviour>().CheckIfAnythingOnButton(inputDir, type);
+        }
+    }
 
     private void ReleaseAllDice()
     {

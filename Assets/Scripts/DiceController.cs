@@ -8,7 +8,7 @@ public class DiceController : MonoBehaviour
     public float flipDuration = 0.3f;
     private int[] diceState = { 0, 1, 2, 3, 4, 5 };
     public bool isFlipping = false;
-
+    public int[] diceRealFace = {1, 2, 3, 4, 5, 6};
 
     [Header("UI显示")]
     public Image[] diceUI;//注意顺序 up,left,right,back,front
@@ -47,27 +47,27 @@ public class DiceController : MonoBehaviour
     {
         if (diceState[0] == 0)
         {
-            return 1;
+            return diceRealFace[0];
         }
         else if (diceState[0] == 1)
         {
-            return 6;
+            return diceRealFace[5];
         }
         else if (diceState[0] == 2)
         {
-            return 3;
+            return diceRealFace[2];
         }
         else if (diceState[0] == 3)
         {
-            return 4;
+            return diceRealFace[3];
         }
         else if (diceState[0] == 4)
         {
-            return 5;
+            return diceRealFace[4];
         }
         else if (diceState[0] == 5)
         {
-            return 2;
+            return diceRealFace[1];
         }
         else
         {
