@@ -7,10 +7,10 @@ using Sequence = DG.Tweening.Sequence;
 
 public class CardBehavior : MonoBehaviour
 {
-    // ¿¨ÅÆ¸¡¶¯²ÎÊı
-    public float singleSideDuration = .3f;     //°ëÖÜÆÚ
-    public float A ;                           //Õñ·ù
-    private float originY;                     //Æ½ºâµã
+    // å¡ç‰Œæµ®åŠ¨å‚æ•°
+    public float singleSideDuration = .3f;     //åŠå‘¨æœŸ
+    public float A ;                           //æŒ¯å¹…
+    private float originY;                     //å¹³è¡¡ç‚¹
 
     //DOTween
     private Tweener tweener;
@@ -59,7 +59,7 @@ public class CardBehavior : MonoBehaviour
             Collider2D hit = Physics2D.OverlapBox((Vector2)transform.position, Vector2.one * .2f, 0);
             if (hit)
             {
-                if (hit.CompareTag("Player"))
+                if (hit.CompareTag("Player")|| hit.GetComponent<DiceSelfController>())
                 {
                     runLevel.isWin = true;
                     StartCoroutine(AfterCollected());
@@ -95,7 +95,7 @@ public class CardBehavior : MonoBehaviour
     private IEnumerator ShowCardAnim()
     {
         /*
-        ÔÚÍ¬³¡¾°µÄCardCanvasµÄ_card½Å±¾ÀïÓĞ¹ØÓÚÈçºÎ¸øÎÄ±¾ÉÏÉ«£¬ÒÔ¼°±à¼­¿¨ÅÆÏà¹ØÎÄ±¾µÄ·½·¨
+        åœ¨åŒåœºæ™¯çš„CardCanvasçš„_cardè„šæœ¬é‡Œæœ‰å…³äºå¦‚ä½•ç»™æ–‡æœ¬ä¸Šè‰²ï¼Œä»¥åŠç¼–è¾‘å¡ç‰Œç›¸å…³æ–‡æœ¬çš„æ–¹æ³•
         */
         ShowCardAnimator.SetTrigger("Show");
         BGCanvasAnimator.SetTrigger("Do");

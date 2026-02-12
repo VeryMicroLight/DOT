@@ -9,6 +9,7 @@ TagManager:
   - Button
   - Door
   - Card
+  - Ice
   layers:
   - Default
   - TransparentFX

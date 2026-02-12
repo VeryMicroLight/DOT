@@ -23,9 +23,9 @@ public class ButtonBehaviour : MonoBehaviour
         RightFace.GetComponent<SpriteRenderer>().sprite = RightFaceImage;
     }
 
-    // ¼ì²é°´Å¥¸Ã²»¸Ã±»°´ÏÂ
-    public void CheckIfAnythingOnButton(Vector3 inputDir, string type) // Á½ÖÖÇé¿ö£º"enter":¼ì²éÊÇ·ñÓĞ¶«Î÷Òª×ßÉÏ°´Å¥£¬ÔÚisMovingÎªtrueÊ±¼ì²â
-                                                                       //           "leave":¼ì²éÊÇ·ñÓĞ¶«Î÷ÒªÀë¿ª°´Å¥£¬ÔÚisMovingÎªfalseÊ±¼ì²â
+    // æ£€æŸ¥æŒ‰é’®è¯¥ä¸è¯¥è¢«æŒ‰ä¸‹
+    public void CheckIfAnythingOnButton(Vector3 inputDir, string type) // ä¸¤ç§æƒ…å†µï¼š"enter":æ£€æŸ¥æ˜¯å¦æœ‰ä¸œè¥¿è¦èµ°ä¸ŠæŒ‰é’®ï¼Œåœ¨isMovingä¸ºtrueæ—¶æ£€æµ‹
+                                                                       //           "leave":æ£€æŸ¥æ˜¯å¦æœ‰ä¸œè¥¿è¦ç¦»å¼€æŒ‰é’®ï¼Œåœ¨isMovingä¸ºfalseæ—¶æ£€æµ‹
     {
         if (type == "enter" && !rightPressed)
         {
@@ -59,12 +59,17 @@ public class ButtonBehaviour : MonoBehaviour
                     rightPressed = true;
                     OpenTheDoors();
                 }
+                if (hit.GetComponent<DiceSelfController>().TopSideNumber() == face && !runLevel.isMoving)
+                {
+                    rightPressed = true;
+                    OpenTheDoors();
+                }
             }
         }
     }
 
 
-    //¿ªÃÅ
+    //å¼€é—¨
     private void OpenTheDoors()
     {
         foreach (GameObject door in TargetDoors)
@@ -75,7 +80,7 @@ public class ButtonBehaviour : MonoBehaviour
     }
 
 
-    // °´Å¥µÄ°´Ñ¹¶¯»­
+    // æŒ‰é’®çš„æŒ‰å‹åŠ¨ç”»
     public void BePressed()
     {
         anim.SetBool("isPressed", true);
