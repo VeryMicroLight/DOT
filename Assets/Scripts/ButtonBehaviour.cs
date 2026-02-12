@@ -54,12 +54,12 @@ public class ButtonBehaviour : MonoBehaviour
             }
             else if (hit.CompareTag("Dice"))
             {
-                if (hit.GetComponent<DiceController>().TopSideNumber() == face && !runLevel.isMoving)
+                if (hit.GetComponent<DiceController>()?.TopSideNumber() == face && !runLevel.isMoving)
                 {
                     rightPressed = true;
                     OpenTheDoors();
                 }
-                if (hit.GetComponent<DiceSelfController>().TopSideNumber() == face && !runLevel.isMoving)
+                if (hit.GetComponent<DiceSelfController>()?.TopSideNumber()== face && !runLevel.isMoving)
                 {
                     rightPressed = true;
                     OpenTheDoors();

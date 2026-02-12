@@ -14,8 +14,15 @@ public class DiceSelfController : MonoBehaviour
     public GameObject LevelManager;
 
     [Header("UI显示")]
-    public Image[] diceUI;//注意顺序 up,left,right,back,front
+    public Image[] diceUI;//顺序 :up,left,right,back,front
     public Sprite[] diceSprites;
+
+    [Header("冰面滑动配置")]
+    public LayerMask iceLayer; // 冰面所在图层
+    public float slideMoveTime = 0.15f; // 冰面滑行一格耗时
+
+    // 调试开关
+    public bool isDebugMode = true;
 
     private Vector2[][] dirVisualConfig = new Vector2[][]
     {
@@ -25,106 +32,169 @@ public class DiceSelfController : MonoBehaviour
         new Vector2[] { Vector2.right, Vector2.left, new Vector2(0.5f, 0) }
     };
 
-    // ====================== 输入系统（完全沿用你Player写法） ======================
     private PlayerInputControl inputControl;
     private bool isMoving = false;
     private bool isSliding = false; // 冰面滑动锁
+    private Vector2 lastInputDir; // 记录最后一次输入方向
 
     private void Awake()
     {
+
         runLevel = LevelManager.GetComponent<RunLevel>();
+
         inputControl = new PlayerInputControl();
         inputControl.Player.Move.performed += OnMovePerformed;
+        inputControl.Player.Move.canceled += ctx => lastInputDir = Vector2.zero;
     }
-    private void OnEnable() => inputControl.Enable();
-    private void OnDisable() => inputControl.Disable();
+
+    private void OnEnable()
+    {
+        inputControl.Enable();
+    }
+
+    private void OnDisable()
+    {
+        inputControl.Disable();
+    }
 
     private void Start()
     {
+        // 强制校准初始位置
         CorrectToGridCenter(transform);
         UpdateFaceDisplay();
         UpdateDiceUI();
+
+        //// 调试：输出初始位置
+        //if (isDebugMode)
+        //    Debug.Log($"[骰子调试] 初始位置：{transform.position}，校准后：{transform.position}", this);
+
+        //// 调试：检查骰子Collider
+        //if (GetComponent<Collider2D>() == null)
+        //    Debug.LogError("[骰子调试] 骰子无Collider2D组件！", this);
+        //else if (GetComponent<Collider2D>().isTrigger)
+        //    Debug.LogWarning("[骰子调试] 骰子Collider是Trigger，可能导致检测异常！", this);
     }
 
-    // ====================== 输入处理 ======================
+    private void Update()
+    {
+        // 仅在无操作时，检测持续输入
+        if (!isMoving && !isFlipping && !isSliding)
+        {
+            Vector2 inputDir = inputControl.Player.Move.ReadValue<Vector2>();
+            if (inputDir.magnitude > 0.1f && lastInputDir != inputDir)
+            {
+                lastInputDir = inputDir;
+                inputDir = GetSingleGridDirection(inputDir);
+                if (isDebugMode)
+                    Debug.Log($"[骰子调试] Update检测到输入方向：{inputDir}", this);
+                TryMoveDice(inputDir);
+            }
+        }
+    }
+
+    // ====================== 输入处理（保留+加调试） ======================
     private void OnMovePerformed(InputAction.CallbackContext context)
     {
         // 移动、翻转、滑动中都禁止操作
         if (isMoving || isFlipping || isSliding)
-            return;
+        {
+             return;
+        }
 
         Vector2 inputDir = inputControl.Player.Move.ReadValue<Vector2>();
+      
         if (inputDir.magnitude > 0.1f)
         {
             inputDir = GetSingleGridDirection(inputDir);
+            lastInputDir = inputDir;
+         
             TryMoveDice(inputDir);
         }
     }
 
-    // ====================== 核心：尝试移动（含障碍+冰面判断） ======================
+    // ====================== 核心：尝试移动（加全流程调试） ======================
     private void TryMoveDice(Vector2 dir)
     {
         Vector2 checkPos = (Vector2)transform.position + dir;
+        CorrectToGridCenter(ref checkPos);
 
-        // 1. 前方有障碍物 → 不能动
-        if (IsPositionHasObstacle(checkPos))
+        // 调试：输出检测位置
+        
+        // 检测障碍物
+        bool hasObstacle = IsPositionHasObstacle(checkPos);
+      
+        if (hasObstacle)
             return;
 
-        // 2. 判断是不是冰面
+        // 检测冰面
         bool isIce = IsPositionHasIce(checkPos);
+        if (isDebugMode)
+        {
+          
+            Collider2D hit = Physics2D.OverlapBox(checkPos, Vector2.one * 0.5f, 0, iceLayer);
+          
+        }
 
         isMoving = true;
-        runLevel.isMoving = true;
+        if (runLevel != null)
+            runLevel.isMoving = true;
+
         if (isIce)
         {
-            // 冰面：不翻面，直接滑行（一路滑到底）
+            
             StartCoroutine(SlideOnIce(dir));
         }
         else
         {
-            // 普通地面：正常移动+翻面
+          
             PushDice(dir);
-            // 移除原有 ResetMoveFlag，改在 FlipAnim 结束后解锁
-            // StartCoroutine(ResetMoveFlag());
         }
     }
 
-    // ====================== 冰面滑行（连续冰面一直滑） ======================
+    //冰面滑行
     private IEnumerator SlideOnIce(Vector2 slideDir)
     {
         isSliding = true;
-        Vector2 currentDir = slideDir;
-
+        int slideCount = 0;
+      
         while (true)
         {
-            Vector2 nextPos = (Vector2)transform.position + currentDir;
+            slideCount++;
+            //  计算下一格位置
+            Vector2 nextPos = (Vector2)transform.position + slideDir;
+            CorrectToGridCenter(ref nextPos);
 
-            // 前面是障碍物 → 停下
+            // 检测障碍物
             if (IsPositionHasObstacle(nextPos))
+            {
                 break;
+            }
 
-            // 移动一格（不翻面）
-            yield return MoveSmooth(transform.position, nextPos, flipDuration);
+            // 检测冰面
+            if (!IsPositionHasIce(nextPos))
+            {
+                break;
+            }
+
+            // 平滑移动
+            if (isDebugMode)
+                Debug.Log($"[骰子调试] 滑行到{nextPos}", this);
+            yield return MoveSmooth(transform.position, nextPos, slideMoveTime);
             CorrectToGridCenter(transform);
 
-            // 下一格还是冰面 → 继续滑同方向
-            if (IsPositionHasIce(nextPos))
-            {
-                continue;
-            }
-            // 下一格是正常地面 → 停下
-            else
+            //安全兜底
+            if (slideCount >= 20)
             {
                 break;
             }
         }
-
         isSliding = false;
         isMoving = false;
-        runLevel.isMoving = false;
+        if (runLevel != null)
+            runLevel.isMoving = false;
     }
 
-    // 平滑移动一格（复用给冰面和普通移动）
+    // 平滑移动一（保留）
     private IEnumerator MoveSmooth(Vector2 from, Vector2 to, float time)
     {
         float t = 0;
@@ -137,38 +207,42 @@ public class DiceSelfController : MonoBehaviour
         transform.position = to;
     }
 
-    // ====================== 障碍检测（完全照搬你Player的逻辑） ======================
+    // ====================== 障碍检测（加调试） ======================
     private bool IsPositionHasObstacle(Vector2 checkPos)
     {
         Collider2D hit = Physics2D.OverlapBox(checkPos, Vector2.one * 0.5f, 0);
         if (hit == null) return false;
-
-        // 障碍物
         if (hit.CompareTag("Obstacle"))
             return true;
 
-        // 门：没开就是障碍
         if (hit.CompareTag("Door"))
         {
             var door = hit.GetComponent<DoorBehaviour>();
-            return door == null || !door.isOpen;
+            bool doorClosed = door == null || !door.isOpen;
+           
+            return doorClosed;
         }
 
-        // 骰子也算障碍（不能重叠）
         if (hit.CompareTag("Dice"))
             return true;
 
         return false;
     }
 
-    // 判断是不是冰面
+    // 冰面检测
     private bool IsPositionHasIce(Vector2 checkPos)
     {
-        Collider2D hit = Physics2D.OverlapBox(checkPos, Vector2.one * 0.5f, 0);
-        return hit != null && hit.CompareTag("Ice");
+        // 检测图层+区域
+        Collider2D hit = Physics2D.OverlapBox(checkPos, Vector2.one * 0.5f, 0, iceLayer);
+        if (hit == null) return false;
+
+        // 检测Tag
+        bool isIceTag = hit.CompareTag("Ice");
+       
+        return isIceTag;
     }
 
-    // ====================== 原有逻辑（仅修改 FlipAnim 加入移动） ======================
+
     private Vector2 GetSingleGridDirection(Vector2 rawInput)
     {
         float absX = Mathf.Abs(rawInput.x);
@@ -178,8 +252,6 @@ public class DiceSelfController : MonoBehaviour
         else
             return new Vector2(0, Mathf.Sign(rawInput.y));
     }
-
-    // 移除原有 ResetMoveFlag，改在 FlipAnim 结束后解锁
 
     private void UpdateDiceUI()
     {
@@ -216,6 +288,7 @@ public class DiceSelfController : MonoBehaviour
         if (isFlipping) return;
 
         Vector2 targetPos = (Vector2)transform.position + pushDir;
+        CorrectToGridCenter(ref targetPos);
         int dirType = GetPushDirectionType(pushDir);
         int oldTopFace = diceState[0];
         int newTopFace = RollDiceState(dirType);
@@ -258,7 +331,6 @@ public class DiceSelfController : MonoBehaviour
         return diceState[0];
     }
 
-    // 核心修改：在 FlipAnim 中加入和 Player 一样的平滑移动逻辑
     IEnumerator FlipAnim(Vector2 targetPos, int oldTopFace, int newTopFace, int dirType)
     {
         isFlipping = true;
@@ -274,7 +346,6 @@ public class DiceSelfController : MonoBehaviour
         newFace.transform.localScale = Vector3.zero;
         newFace.color = new Color(1, 1, 1, 0);
 
-        // ===== 新增：保存起始位置，添加平滑移动（和 Player 的 MovePlayer 逻辑一致） =====
         Vector2 startPos = transform.position;
         float elapsed = 0;
         while (elapsed < flipDuration)
@@ -282,10 +353,8 @@ public class DiceSelfController : MonoBehaviour
             elapsed += Time.deltaTime;
             float t = elapsed / flipDuration;
 
-            // 1. 位置移动插值（核心！骰子从 startPos 移动到 targetPos）
             transform.position = Vector2.Lerp(startPos, targetPos, t);
 
-            // 2. 原有翻转动画逻辑（完全保留）
             float posT = Mathf.Lerp(0, 0.5f, t);
             float scaleT = Mathf.Lerp(1, 0, t);
             float newScaleT = Mathf.Lerp(0, 1, t);
@@ -310,14 +379,14 @@ public class DiceSelfController : MonoBehaviour
             yield return null;
         }
 
-        // 强制修正位置到网格中心（消除插值误差）
         transform.position = targetPos;
         CorrectToGridCenter(transform);
 
         UpdateFaceDisplay();
         isFlipping = false;
-        isMoving = false; // 移动+翻面完成后解锁
-        runLevel.isMoving = false;
+        isMoving = false;
+        if (runLevel != null)
+            runLevel.isMoving = false;
     }
 
     private void UpdateFaceDisplay()
@@ -359,5 +428,12 @@ public class DiceSelfController : MonoBehaviour
         float correctX = gridX + 0.5f;
         float correctY = gridY + 0.5f;
         targetTrans.position = new Vector3(correctX, correctY, targetTrans.position.z);
+    }
+
+    private void CorrectToGridCenter(ref Vector2 targetPos)
+    {
+        int gridX = Mathf.RoundToInt(targetPos.x - 0.5f);
+        int gridY = Mathf.RoundToInt(targetPos.y - 0.5f);
+        targetPos = new Vector2(gridX + 0.5f, gridY + 0.5f);
     }
 }

@@ -8,11 +8,17 @@ public class DiceController : MonoBehaviour
     public float flipDuration = 0.3f;
     private int[] diceState = { 0, 1, 2, 3, 4, 5 };
     public bool isFlipping = false;
-    public int[] diceRealFace = {1, 2, 3, 4, 5, 6};
+    public int[] diceRealFace = { 1, 2, 3, 4, 5, 6 };
 
     [Header("UI显示")]
-    public Image[] diceUI;//注意顺序 up,left,right,back,front
+    public Image[] diceUI; // 顺序：up,left,right,back,front
     public Sprite[] diceSprites;
+
+    [Header("冰面滑动配置")]
+    public LayerMask iceLayer; // 冰面层
+    public float slideMoveTime = 0.15f; // 滑动一格耗时
+    private bool isSliding = false; // 滑动中标记
+    private Vector2 slideDir; // 滑行方向
 
     private Vector2[][] dirVisualConfig = new Vector2[][]
     {
@@ -29,7 +35,6 @@ public class DiceController : MonoBehaviour
         UpdateDiceUI();
     }
 
-
     private void UpdateDiceUI()
     {
         if (diceUI == null || diceUI.Length < 5) return;
@@ -42,41 +47,19 @@ public class DiceController : MonoBehaviour
         diceUI[4].sprite = GetSpriteForFace(diceState[4]);  // 下方：前面
     }
 
-    //骰子朝上的点数
+    // 骰子朝上的点数
     public int TopSideNumber()
     {
-        if (diceState[0] == 0)
-        {
-            return diceRealFace[0];
-        }
-        else if (diceState[0] == 1)
-        {
-            return diceRealFace[5];
-        }
-        else if (diceState[0] == 2)
-        {
-            return diceRealFace[2];
-        }
-        else if (diceState[0] == 3)
-        {
-            return diceRealFace[3];
-        }
-        else if (diceState[0] == 4)
-        {
-            return diceRealFace[4];
-        }
-        else if (diceState[0] == 5)
-        {
-            return diceRealFace[1];
-        }
-        else
-        {
-            return 0;
-        }
+        if (diceState[0] == 0) return diceRealFace[0];
+        else if (diceState[0] == 1) return diceRealFace[5];
+        else if (diceState[0] == 2) return diceRealFace[2];
+        else if (diceState[0] == 3) return diceRealFace[3];
+        else if (diceState[0] == 4) return diceRealFace[4];
+        else if (diceState[0] == 5) return diceRealFace[1];
+        else return 0;
     }
 
-    
-    //获取图片
+    // 获取图片
     private Sprite GetSpriteForFace(int faceIndex)
     {
         if (faceIndex >= 0 && faceIndex < diceSprites.Length)
@@ -86,25 +69,89 @@ public class DiceController : MonoBehaviour
         return null;
     }
 
+    // 推动骰子
     public void PushDice(Vector2 pushDir)
     {
-        if (isFlipping)
+        // 翻转/滑动中禁止操作
+        if (isFlipping || isSliding) return;
+
+        // 计算下一格位置并校准到网格中心
+        Vector2 targetPos = (Vector2)transform.position + pushDir;
+        CorrectToGridCenter(ref targetPos);
+
+        // 检测下一格是否是冰面 ,, 是则滑行，否则正常翻面
+        bool willEnterIce = IsPositionIce(targetPos);
+        if (willEnterIce)
         {
+            slideDir = pushDir;
+            StartCoroutine(SlideIceCoroutine()); // 触发滑行（不翻转）
             return;
         }
 
-        // 确保一次只走1格
-        Vector2 targetPos = (Vector2)transform.position + pushDir;
-
+        // 非冰面：执行原有翻面逻辑
         int dirType = GetPushDirectionType(pushDir);
         int oldTopFace = diceState[0];
         int newTopFace = RollDiceState(dirType);
-
-        //立即更新UI
         UpdateDiceUI();
-
         StartCoroutine(FlipAnim(targetPos, oldTopFace, newTopFace, dirType));
     }
+
+    // 冰面滑行协程
+    private IEnumerator SlideIceCoroutine()
+    {
+        isSliding = true;
+
+        while (true)
+        {
+            //计算下一格位置并校准网格
+            Vector2 nextPos = (Vector2)transform.position + slideDir;
+            CorrectToGridCenter(ref nextPos);
+
+            // 检测下一格是否有墙（Tag=Obstacle）→ 有则停止滑行
+            if (IsPositionBlocked(nextPos))
+            {
+                break;
+            }
+
+            //平滑滑动到下一格
+            Vector2 startPos = transform.position;
+            float timer = 0;
+            while (timer < slideMoveTime)
+            {
+                timer += Time.deltaTime;
+                transform.position = Vector2.Lerp(startPos, nextPos, timer / slideMoveTime);
+                yield return null;
+            }
+
+            //滑到下一格后，强制校准位置
+            transform.position = nextPos;
+            CorrectToGridCenter(transform);
+
+            //检测当前位置是否还在冰面上 ,,不在则停止滑行（滑到普通地面了）
+            if (!IsPositionIce(transform.position))
+            {
+                break;
+            }
+        }
+
+        isSliding = false; // 重置滑动状态
+    }
+
+
+    // 检测指定位置是否是冰面（仅检测iceLayer + Tag=Ice）
+    private bool IsPositionIce(Vector2 checkPos)
+    {
+        Collider2D hit = Physics2D.OverlapPoint(checkPos, iceLayer);
+        return hit != null && hit.CompareTag("Ice");
+    }
+
+    // 检测指定位置是否有墙
+    private bool IsPositionBlocked(Vector2 checkPos)
+    {
+        Collider2D hit = Physics2D.OverlapPoint(checkPos);
+        return hit != null && hit.CompareTag("Obstacle");
+    }
+
 
     private int RollDiceState(int dirType)
     {
@@ -172,7 +219,6 @@ public class DiceController : MonoBehaviour
                 oldScale.x = scaleT;
             oldFace.transform.localScale = oldScale;
             oldFace.transform.localPosition = oldCompressDir * posT;
-            //oldFace.color = new Color(1, 1, 1, scaleT);
 
             newFace.transform.localPosition = Vector2.Lerp(newStartPos, Vector2.zero, t);
             Vector3 newScale = Vector3.one;
@@ -186,10 +232,7 @@ public class DiceController : MonoBehaviour
             yield return null;
         }
 
-        // 先赋值目标位置，再强制修正到n.5格式，消除浮点数插值误差
-        //transform.position = targetPos;
         CorrectToGridCenter(transform);
-
         UpdateFaceDisplay();
         isFlipping = false;
     }
@@ -213,7 +256,6 @@ public class DiceController : MonoBehaviour
                 diceFaces[i].color = new Color(1, 1, 1, 0);
             }
         }
-        // 更新UI
         UpdateDiceUI();
     }
 
@@ -229,20 +271,23 @@ public class DiceController : MonoBehaviour
         }
     }
 
-    // 通用工具方法：强制将物体坐标修正为n.5格式（瓦片中心），后续所有物体都可复用
+    // 通用工具方法：强制将物体坐标修正为n.5格式（瓦片中心）
     public static void CorrectToGridCenter(Transform targetTrans)
     {
-        // 提取当前坐标的x、y值
         float x = targetTrans.position.x;
         float y = targetTrans.position.y;
-        // 先取整得到整数n（如1.498→1，2.501→3？不，用Mathf.RoundToInt更准确，或直接取整后调整）
-        // 核心逻辑：n.5 = 整数部分 + 0.5，消除所有浮点数误差
-        int gridX = Mathf.RoundToInt(x - 0.5f); 
-        int gridY = Mathf.RoundToInt(y - 0.5f); 
-        // 重构严格的n.5格式坐标
+        int gridX = Mathf.RoundToInt(x - 0.5f);
+        int gridY = Mathf.RoundToInt(y - 0.5f);
         float correctX = gridX + 0.5f;
         float correctY = gridY + 0.5f;
-        // 赋值回物体，z轴保持不变
         targetTrans.position = new Vector3(correctX, correctY, targetTrans.position.z);
+    }
+
+    // 新增：校准Vector2位置到网格中心（用于检测）
+    private void CorrectToGridCenter(ref Vector2 targetPos)
+    {
+        int gridX = Mathf.RoundToInt(targetPos.x - 0.5f);
+        int gridY = Mathf.RoundToInt(targetPos.y - 0.5f);
+        targetPos = new Vector2(gridX + 0.5f, gridY + 0.5f);
     }
 }

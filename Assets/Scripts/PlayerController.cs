@@ -25,7 +25,7 @@ public class PlayerController : MonoBehaviour
 
     private void Start()
     {
-        // ±£ÁôÔ­ÓĞ×ø±êĞŞÕı
+        // ä¿ç•™åŸæœ‰åæ ‡ä¿®æ­£
         DiceController.CorrectToGridCenter(transform);
     }
 
@@ -46,15 +46,15 @@ public class PlayerController : MonoBehaviour
     IEnumerator MovePlayer(Vector2 inputDir)
     {
         Vector2 startPos = transform.position;
-        Vector2 playerTargetPos = startPos + inputDir; // ÈËÎïÄ¿±êÎ»ÖÃ
-        // ¼ì²â:ÈËÎï×ÔÉíÄ¿±êÎ»ÖÃÊÇ·ñÓĞÕÏ°­Îï£¨Obstacle£©
+        Vector2 playerTargetPos = startPos + inputDir; // äººç‰©ç›®æ ‡ä½ç½®
+        // æ£€æµ‹:äººç‰©è‡ªèº«ç›®æ ‡ä½ç½®æ˜¯å¦æœ‰éšœç¢ç‰©ï¼ˆObstacleï¼‰
         if (IsPositionHasObstacle(playerTargetPos))
         {
-            runLevel.isMoving = false; // ÖØÖÃ×´Ì¬£¬±ÜÃâÈËÎï¿¨×¡
-            yield break; // ÖÕÖ¹Ğ­³Ì£¬½ûÖ¹ÒÆ¶¯
+            runLevel.isMoving = false; // é‡ç½®çŠ¶æ€ï¼Œé¿å…äººç‰©å¡ä½
+            yield break; // ç»ˆæ­¢åç¨‹ï¼Œç¦æ­¢ç§»åŠ¨
         }
 
-        // ±£ÁôÔ­ÓĞ÷»×Ó¼ì²â
+        // ä¿ç•™åŸæœ‰éª°å­æ£€æµ‹
         Collider2D[] hits = Physics2D.OverlapBoxAll(playerTargetPos, Vector2.one * 0.5f, 0);
         DiceController targetDice = null;
         foreach (var hit in hits)
@@ -67,25 +67,25 @@ public class PlayerController : MonoBehaviour
         }
 
 
-        // ÈôÓĞ÷»×Ó£¬¼ì²â÷»×ÓÄ¿±êÎ»ÖÃÊÇ·ñÓĞÕÏ°­Îï
+        // è‹¥æœ‰éª°å­ï¼Œæ£€æµ‹éª°å­ç›®æ ‡ä½ç½®æ˜¯å¦æœ‰éšœç¢ç‰©
 
         if (targetDice != null)
         {
-            Vector2 diceTargetPos = (Vector2)targetDice.transform.position + inputDir; // ÷»×ÓÄ¿±êÎ»ÖÃ
+            Vector2 diceTargetPos = (Vector2)targetDice.transform.position + inputDir; // éª°å­ç›®æ ‡ä½ç½®
             if (IsPositionHasObstacle(diceTargetPos))
             {
-                runLevel.isMoving = false; // ÖØÖÃ×´Ì¬
-                yield break; // ÖÕÖ¹Ğ­³Ì£¬¼È²»ÍÆ÷»×ÓÒ²²»ÒÆ¶¯
+                runLevel.isMoving = false; // é‡ç½®çŠ¶æ€
+                yield break; // ç»ˆæ­¢åç¨‹ï¼Œæ—¢ä¸æ¨éª°å­ä¹Ÿä¸ç§»åŠ¨
             }
         }
 
-        // Á½²ã¼ì²â¶¼Í¨¹ı.Ö´ĞĞÔ­ÓĞÍÆ÷»×Ó+ÈËÎïÒÆ¶¯Âß¼­
+        // ä¸¤å±‚æ£€æµ‹éƒ½é€šè¿‡.æ‰§è¡ŒåŸæœ‰æ¨éª°å­+äººç‰©ç§»åŠ¨é€»è¾‘
         if (targetDice != null)
         {
             MusicSource.Play();
         }
 
-        // Ô­ÓĞÈËÎïÒÆ¶¯²åÖµ¶¯»­
+        // åŸæœ‰äººç‰©ç§»åŠ¨æ’å€¼åŠ¨ç”»
         float elapsed = 0;
         while (elapsed < moveDuration)
         {
@@ -95,14 +95,14 @@ public class PlayerController : MonoBehaviour
             yield return null;
         }
 
-        // Ô­ÓĞ×ø±êĞŞÕı£¬Ïû³ı¸¡µãÊıÎó²î
+        // åŸæœ‰åæ ‡ä¿®æ­£ï¼Œæ¶ˆé™¤æµ®ç‚¹æ•°è¯¯å·®
         transform.position = playerTargetPos;
         DiceController.CorrectToGridCenter(transform);
 
         runLevel.isMoving = false;
     }
 
-    // ±£ÁôÔ­ÓĞµ¥¸ñ·½Ïò´¦Àí
+    // ä¿ç•™åŸæœ‰å•æ ¼æ–¹å‘å¤„ç†
     private Vector2 GetSingleGridDirection(Vector2 rawInput)
     {
         float absX = Mathf.Abs(rawInput.x);
@@ -117,11 +117,11 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    // Í¨ÓÃÕÏ°­Îï¼ì²â·½·¨£¨¿É¸´ÓÃ¸øºóĞøËùÓĞÎïÌå£©
-    // ¼ì²âÖ¸¶¨Î»ÖÃÊÇ·ñÓĞ±êÇ©ÎªObstacle»òÕßDoorµÄÎïÌå
+    // é€šç”¨éšœç¢ç‰©æ£€æµ‹æ–¹æ³•ï¼ˆå¯å¤ç”¨ç»™åç»­æ‰€æœ‰ç‰©ä½“ï¼‰
+    // æ£€æµ‹æŒ‡å®šä½ç½®æ˜¯å¦æœ‰æ ‡ç­¾ä¸ºObstacleæˆ–è€…Doorçš„ç‰©ä½“
     private bool IsPositionHasObstacle(Vector2 checkPos)
     {
-        // ÓÃºÍ÷»×Ó¼ì²âÏàÍ¬µÄ³ß´ç£¬ÊÊÅäÍßÆ¬ÖĞĞÄÅö×²
+        // ç”¨å’Œéª°å­æ£€æµ‹ç›¸åŒçš„å°ºå¯¸ï¼Œé€‚é…ç“¦ç‰‡ä¸­å¿ƒç¢°æ’
         Vector2 inputDir = inputControl.Player.Move.ReadValue<Vector2>();
         Collider2D obstacleHit = Physics2D.OverlapBox(checkPos, Vector2.one * 0.5f, 0);
         if (obstacleHit)
@@ -147,16 +147,16 @@ public class PlayerController : MonoBehaviour
                 return IsPositionHasObstacle(checkPos + inputDir);
 
             }
-            
+
             else
             {
-                return false; // ÎŞÕÏ°­Îï
+                return false; // æ— éšœç¢ç‰©
             }
         }
         else
         {
-            return false; // ÎŞÕÏ°­Îï
+            return false; // æ— éšœç¢ç‰©
         }
-            
+
     }
 }
