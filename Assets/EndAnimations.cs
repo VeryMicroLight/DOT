@@ -2,18 +2,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
+using Unity.VisualScripting;
 
-public class EndAnimaotions : MonoBehaviour
+public class EndAnimations : MonoBehaviour
 {
     public GameObject origin;
     public float radius = 5f;
-    public float spawnPosZ = 10f;
+    public float spawnPosZ = -200f;
     private int count = 0;
 
     private void Awake()
     {
         CardCreate();
-        MoveAnim();
+        StartCoroutine(MoveAnim());
     }
 
     private void CardCreate()
@@ -28,11 +29,15 @@ public class EndAnimaotions : MonoBehaviour
         }
     }
 
-    public void MoveAnim()
+    public IEnumerator MoveAnim()
     {
         transform.DOMoveZ(522, 6f).SetEase(Ease.InOutQuad);
         transform.DORotate(new Vector3(0, 0, 1440), 6f, RotateMode.LocalAxisAdd).SetEase(Ease.InOutQuad);
+        yield return new WaitForSeconds(6f);
+        Destroy(gameObject);
+        yield return null;
     }
+
 }
         
 
