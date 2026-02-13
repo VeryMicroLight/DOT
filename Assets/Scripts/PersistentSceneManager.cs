@@ -23,6 +23,9 @@ public class PersistentSceneManager : MonoBehaviour
     [Header("场景渐变配置")]
     public float sceneFadeDuration = 0.5f;
 
+    [Header("BGM配置")]
+    public AudioClip bgm1; // 非第七场景的背景音乐
+    public AudioClip bgm2; // 第七场景的背景音乐
     private void Awake()
     {
         if (Instance == null) Instance = this;
@@ -59,6 +62,7 @@ public class PersistentSceneManager : MonoBehaviour
             {
                 currentLoadedScene = handle;
                 Debug.Log("开始场景加载成功");
+                SwitchBGM(false);
                 // 场景加载完成后，启动淡入动画（等待动画完成）
                 if (FadeUI.Instance != null)
                 {
@@ -147,6 +151,7 @@ public class PersistentSceneManager : MonoBehaviour
                 currentLoadedScene = handle;
                 SceneManager.SetActiveScene(handle.Result.Scene);
                 Debug.Log("关卡" + levelData.levelIndex + "加载成功：" + levelData.levelName);
+                SwitchBGM(levelData.levelIndex == 7);
 
                 if (LevelSelectUI.Instance != null)
                 {
@@ -191,6 +196,40 @@ public class PersistentSceneManager : MonoBehaviour
     }
     #endregion
 
+    //切换BGM
+    private void SwitchBGM(bool isSeventhScene)
+    {
+        // 查找名为BGM的物体
+        GameObject bgmObject = GameObject.Find("BGM");
+        if (bgmObject == null)
+        {
+            Debug.LogWarning("未找到名为BGM的物体");
+            return;
+        }
+
+        // 获取AudioSource组件
+        AudioSource audioSource = bgmObject.GetComponent<AudioSource>();
+        if (audioSource == null)
+        {
+            Debug.LogWarning("BGM物体上未找到AudioSource组件");
+            return;
+        }
+
+        // 根据是否为第七场景切换音乐
+        AudioClip targetBgm = isSeventhScene ? bgm2 : bgm1;
+        if (targetBgm == null)
+        {
+            Debug.LogWarning(isSeventhScene ? "bgm2未赋值" : "bgm1未赋值");
+            return;
+        }
+
+        // 切换并播放音乐（确保音乐持续播放）
+        audioSource.clip = targetBgm;
+        if (!audioSource.isPlaying)
+        {
+            audioSource.Play();
+        }
+    }
     public void ReturnToMainMenu()
     {
         if (currentLoadedScene.IsValid())

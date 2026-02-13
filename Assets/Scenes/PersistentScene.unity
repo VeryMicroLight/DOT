@@ -165,6 +165,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 3dac1c3b17c79564ab95542fb116668f, type: 2}
   - {fileID: 11400000, guid: 82f8440a63f4b5a489d09f7ae1b895dc, type: 2}
   sceneFadeDuration: 1
+  bgm1: {fileID: 8300000, guid: 5b1ed8fbe89154eaf96723b6e5f0aad3, type: 3}
+  bgm2: {fileID: 8300000, guid: 03fee616cc0ca264baafa9b4508ea010, type: 3}
 --- !u!4 &37306321
 Transform:
   m_ObjectHideFlags: 0
