@@ -12,6 +12,9 @@ public class EndUIManager : MonoBehaviour
     [SerializeField] private GameObject winnerPanel; // 胜利面板（默认隐藏）
 
 public GameObject panel;
+public GameObject wlight;
+
+public GameObject man;
 
 
 public Sprite[] vortexSprites;  // 在Inspector拖拽图片到这里
@@ -25,6 +28,9 @@ public Sprite[] vortexSprites;  // 在Inspector拖拽图片到这里
         nextLevelBtn.onClick.AddListener(OnNextLevelClick);
         backToStartBtn.onClick.AddListener(OnBackToStartClick);
         panel.SetActive(false); // 初始隐藏胜利面板
+        wlight.SetActive(false);
+        man.SetActive(false);
+
     }
 private void Start()
     {
@@ -32,12 +38,15 @@ private void Start()
        
             
             panel.SetActive(false);
+            wlight.SetActive(false);
+            man.SetActive(false);
         
     }
     // 外部调用：关卡胜利时显示面板（如玩家触达终点、消灭所有敌人时调用）
     public void ShowWinnerPanel()
     {
         winnerPanel.SetActive(true);
+      
     }
 
     // 点击下一关
@@ -50,6 +59,8 @@ private void OnNextLevelClick()
 private IEnumerator VortexEffect()
 {
     panel.SetActive(true);
+    wlight.SetActive(true);
+    man.SetActive(true);
     // 显示EndCanvas
     Canvas canvas = GameObject.Find("EndCanvas").GetComponent<Canvas>();
     canvas.enabled = true;
