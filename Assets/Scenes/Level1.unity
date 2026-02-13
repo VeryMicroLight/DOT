@@ -297,7 +297,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 672318588817445692, guid: 6488742d2c1cbb148a07d7856a088dfb, type: 3}
       propertyPath: _name
-      value: "\u566A<color=red>\u70B9"
+      value: "\u62C9\u683C\u6717\u65E5<color=red>\u70B9"
       objectReference: {fileID: 0}
     - target: {fileID: 672318588817445692, guid: 6488742d2c1cbb148a07d7856a088dfb, type: 3}
       propertyPath: issue
@@ -305,7 +305,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 672318588817445692, guid: 6488742d2c1cbb148a07d7856a088dfb, type: 3}
       propertyPath: _issue
-      value: "\u6211\u4FDD\u8BC1\u6211\u6CA1\u6709\u5728\u94C0\u77FF\u9644\u8FD1\u62CD\u6444\u8FD9\u5F20\u56FE\uFF0C\u7EDD\u5BF9\u6CA1\u6709"
+      value: "\u5F15\u529B\u5E73\u8861\u4E4B\u5904\uFF0C\u5176\u5B9E\u6709\u4E94\u4E2A"
       objectReference: {fileID: 0}
     - target: {fileID: 672318588817445692, guid: 6488742d2c1cbb148a07d7856a088dfb, type: 3}
       propertyPath: sprite
