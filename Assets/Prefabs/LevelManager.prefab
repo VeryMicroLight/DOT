@@ -44,4 +44,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a043ff233b9ce544ba8a480d884b20d8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Player: {fileID: 0}
+  inputDir: {x: 0, y: 0}
   isMoving: 0
+  isWin: 0
+  Card: {fileID: 7944877551221763652, guid: fa5cd2572d4c48d4ea351e053ee8662a, type: 3}
