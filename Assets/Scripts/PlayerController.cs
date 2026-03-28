@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -48,7 +48,7 @@ public class PlayerController : MonoBehaviour
         Vector2 startPos = transform.position;
         Vector2 playerTargetPos = startPos + inputDir; // 人物目标位置
         // 检测:人物自身目标位置是否有障碍物（Obstacle）
-        if (IsPositionHasObstacle(playerTargetPos))
+        if (IsPositionHasObstacle(playerTargetPos, inputDir))
         {
             runLevel.isMoving = false; // 重置状态，避免人物卡住
             yield break; // 终止协程，禁止移动
@@ -72,7 +72,7 @@ public class PlayerController : MonoBehaviour
         if (targetDice != null)
         {
             Vector2 diceTargetPos = (Vector2)targetDice.transform.position + inputDir; // 骰子目标位置
-            if (IsPositionHasObstacle(diceTargetPos))
+            if (IsPositionHasObstacle(diceTargetPos, inputDir))
             {
                 runLevel.isMoving = false; // 重置状态
                 yield break; // 终止协程，既不推骰子也不移动
@@ -117,13 +117,13 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    // 通用障碍物检测方法（可复用给后续所有物体）
+    // 通用障碍物检测方法
     // 检测指定位置是否有标签为Obstacle或者Door的物体
-    private bool IsPositionHasObstacle(Vector2 checkPos)
+    private bool IsPositionHasObstacle(Vector2 checkPos, Vector2 dir)
     {
-        // 用和骰子检测相同的尺寸，适配瓦片中心碰撞
-        Vector2 inputDir = inputControl.Player.Move.ReadValue<Vector2>();
+        // Vector2 inputDir = inputControl.Player.Move.ReadValue<Vector2>();
         Collider2D obstacleHit = Physics2D.OverlapBox(checkPos, Vector2.one * 0.5f, 0);
+
         if (obstacleHit)
         {
             if (obstacleHit.CompareTag("Obstacle") || obstacleHit.CompareTag("Door"))
@@ -140,23 +140,35 @@ public class PlayerController : MonoBehaviour
             else if (obstacleHit.CompareTag("Dice"))
             {
                 obstacleHit.transform.SetParent(transform, true);
-                if (!IsPositionHasObstacle(checkPos + inputDir))
+
+  
+                if (!IsPositionHasObstacle(checkPos + dir, dir))
                 {
-                    obstacleHit.GetComponent<DiceController>().PushDice(inputDir);
+                    obstacleHit.GetComponent<DiceController>().PushDice(dir);
                 }
-                return IsPositionHasObstacle(checkPos + inputDir);
-
+                return IsPositionHasObstacle(checkPos + dir, dir);
             }
-
             else
             {
-                return false; // 无障碍物
+                return false;
             }
         }
         else
         {
-            return false; // 无障碍物
+            return false;
         }
+    }
 
+
+
+    // 给手机按钮调用的公开方法
+    public void OnMovePerformedByDirection(Vector2 dir)
+    {
+        if (!runLevel.isMoving)
+        {
+            inputDir = GetSingleGridDirection(dir);
+            runLevel.isMoving = true;
+            StartCoroutine(MovePlayer(inputDir));
+        }
     }
 }

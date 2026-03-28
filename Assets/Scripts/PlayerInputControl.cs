@@ -114,7 +114,7 @@ public partial class @PlayerInputControl: IInputActionCollection2, IDisposable
                     ""name"": ""Fire"",
                     ""type"": ""Button"",
                     ""id"": ""86a60562-c6f1-40ef-9af6-f1fd1bf7065a"",
-                    ""expectedControlType"": ""Button"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
@@ -145,7 +145,7 @@ public partial class @PlayerInputControl: IInputActionCollection2, IDisposable
                     ""path"": ""<Gamepad>/leftStick"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": "";Gamepad"",
+                    ""groups"": "";Gamepad;Touch"",
                     ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -255,7 +255,7 @@ public partial class @PlayerInputControl: IInputActionCollection2, IDisposable
                     ""path"": ""<XRController>/{Primary2DAxis}"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""XR"",
+                    ""groups"": ""XR;Touch"",
                     ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -266,7 +266,7 @@ public partial class @PlayerInputControl: IInputActionCollection2, IDisposable
                     ""path"": ""<Joystick>/stick"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""Joystick"",
+                    ""groups"": ""Joystick;Touch"",
                     ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -1116,9 +1116,9 @@ public partial class @PlayerInputControl: IInputActionCollection2, IDisposable
         /// <summary>
         /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
         /// </summary>
-        /// <param _name="instance">Callback instance.</param>
+        /// <param name="instance">Callback instance.</param>
         /// <remarks>
-        /// If <paramref _name="instance" /> is <c>null</c> or <paramref _name="instance"/> have already been added this method does nothing.
+        /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
         /// </remarks>
         /// <seealso cref="PlayerActions" />
         public void AddCallbacks(IPlayerActions instance)
@@ -1146,7 +1146,7 @@ public partial class @PlayerInputControl: IInputActionCollection2, IDisposable
         /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
         /// </summary>
         /// <remarks>
-        /// Calling this method when <paramref _name="instance" /> have not previously been registered has no side-effects.
+        /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
         /// </remarks>
         /// <seealso cref="PlayerActions" />
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -1182,7 +1182,7 @@ public partial class @PlayerInputControl: IInputActionCollection2, IDisposable
         /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
         /// </summary>
         /// <remarks>
-        /// If <paramref _name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
+        /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
         /// </remarks>
         /// <seealso cref="PlayerActions.AddCallbacks(IPlayerActions)" />
         /// <seealso cref="PlayerActions.RemoveCallbacks(IPlayerActions)" />
@@ -1281,9 +1281,9 @@ public partial class @PlayerInputControl: IInputActionCollection2, IDisposable
         /// <summary>
         /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
         /// </summary>
-        /// <param _name="instance">Callback instance.</param>
+        /// <param name="instance">Callback instance.</param>
         /// <remarks>
-        /// If <paramref _name="instance" /> is <c>null</c> or <paramref _name="instance"/> have already been added this method does nothing.
+        /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
         /// </remarks>
         /// <seealso cref="UIActions" />
         public void AddCallbacks(IUIActions instance)
@@ -1326,7 +1326,7 @@ public partial class @PlayerInputControl: IInputActionCollection2, IDisposable
         /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
         /// </summary>
         /// <remarks>
-        /// Calling this method when <paramref _name="instance" /> have not previously been registered has no side-effects.
+        /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
         /// </remarks>
         /// <seealso cref="UIActions" />
         private void UnregisterCallbacks(IUIActions instance)
@@ -1377,7 +1377,7 @@ public partial class @PlayerInputControl: IInputActionCollection2, IDisposable
         /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
         /// </summary>
         /// <remarks>
-        /// If <paramref _name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
+        /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
         /// </remarks>
         /// <seealso cref="UIActions.AddCallbacks(IUIActions)" />
         /// <seealso cref="UIActions.RemoveCallbacks(IUIActions)" />
